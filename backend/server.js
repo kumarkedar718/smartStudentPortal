@@ -31,15 +31,15 @@ app.get('*', (req, res) => {
 // Start Server with EADDRINUSE handling
 const server = app.listen(PORT, () => {
   console.log(`====================================================`);
-  console.log(`🚀 Smart Student Portal Server is running on port ${PORT}`);
-  console.log(`🌐 Open in browser: http://localhost:${PORT}`);
+  console.log(`Smart Student Portal Server is running on port ${PORT}`);
+  console.log(`Open in browser: http://localhost:${PORT}`);
   console.log(`====================================================`);
 });
 
 server.on('error', (err) => {
   if (err.code === 'EADDRINUSE') {
-    console.error(`⚠️ Port ${PORT} is already in use (Server is already running!)`);
-    console.log(`👉 Please open http://localhost:${PORT} in your browser.`);
+    console.error(`Port ${PORT} is already in use (Server is already running!)`);
+    console.log(`Please open http://localhost:${PORT} in your browser.`);
   } else {
     console.error('Server error:', err);
   }
