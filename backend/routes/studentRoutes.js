@@ -159,7 +159,6 @@ router.post('/assignments/submit', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Submission content is required.' });
     }
 
-    // Check existing
     const existing = await db.query(
       `SELECT id FROM submissions WHERE assignment_id = ? AND student_id = ?`,
       [assignment_id, student_id]
@@ -223,6 +222,52 @@ router.get('/notes', async (req, res) => {
        ORDER BY n.created_at DESC`
     );
     res.json({ success: true, data: notes });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// 9. AI Academic Assistant / Chatbot Endpoint
+router.post('/ai-chat', async (req, res) => {
+  try {
+    const { question, studentName } = req.body;
+
+    if (!question) {
+      return res.status(400).json({ success: false, message: 'Question is required.' });
+    }
+
+    const q = question.toLowerCase();
+    let reply = "";
+
+    // Intelligent Knowledge Base Responses
+    if (q.includes('bst') || q.includes('binary search tree') || q.includes('tree')) {
+      reply = `🤖 **Apex AI Tutor (Data Structures & Algorithms)**:\n\nA **Binary Search Tree (BST)** is a node-based binary tree data structure with the following properties:\n\n1. The **left subtree** of a node contains only nodes with keys *lesser* than the node's key.\n2. The **right subtree** of a node contains only nodes with keys *greater* than the node's key.\n3. Both left & right subtrees must also be binary search trees.\n\n⏱️ **Time Complexities**:\n- **Search / Insert / Delete**: Average O(log N), Worst Case O(N).\n- **In-order Traversal** yields sorted elements!`;
+    } 
+    else if (q.includes('3nf') || q.includes('normalization') || q.includes('dbms') || q.includes('database')) {
+      reply = `🤖 **Apex AI Tutor (Database Systems)**:\n\n**3rd Normal Form (3NF)** requires:\n1. The table must already be in **2NF**.\n2. **No Transitive Functional Dependency** (i.e. Non-prime attributes should not depend on other non-prime attributes).\n\n💡 *Rule of Thumb*: Every non-key attribute must depend on **the key, the whole key, and nothing but the key**!`;
+    } 
+    else if (q.includes('tcp') || q.includes('handshake') || q.includes('network') || q.includes('osi')) {
+      reply = `🤖 **Apex AI Tutor (Computer Networks)**:\n\n**TCP 3-Way Handshake** establishes a reliable connection between client & server:\n\n1. **SYN**: Client sends a packet with SYN flag & initial Sequence Number (ISN).\n2. **SYN-ACK**: Server acknowledges with SYN-ACK packet.\n3. **ACK**: Client sends ACK back to confirm connection setup.\n\n🌐 Connection is now Established!`;
+    } 
+    else if (q.includes('process') && q.includes('thread')) {
+      reply = `🤖 **Apex AI Tutor (Operating Systems)**:\n\n**Process vs Thread**:\n\n- **Process**: An executing program with its own dedicated memory space, file handles, and PID. High context-switch overhead.\n- **Thread**: A lightweight execution unit within a process. Threads share memory & code segment, making communication faster!`;
+    } 
+    else if (q.includes('exam') || q.includes('prepare') || q.includes('study') || q.includes('marks')) {
+      reply = `🤖 **Apex AI Tutor (Exam Prep Guide)**:\n\nHey ${studentName || 'Student'}! Here are top tips for B.Tech Semester Exams:\n\n1. **Revise Unit Cheat Sheets** in the Notes section.\n2. Practice solving previous year **Binary Search Tree, Semaphore, & Normalization numericals**.\n3. Keep attendance above **75%** to secure your hall ticket.\n4. Complete all pending assignments on time!`;
+    } 
+    else if (q.includes('automata') || q.includes('dfa') || q.includes('nfa') || q.includes('toc')) {
+      reply = `🤖 **Apex AI Tutor (Theory of Computation)**:\n\n**DFA vs NFA**:\n- **DFA (Deterministic Finite Automata)**: For every state and input symbol, there is **exactly one** transition.\n- **NFA (Non-deterministic Finite Automata)**: Can have multiple or zero transitions for an input, including $\\epsilon$ (null) transitions. Both have equal language recognition power!`;
+    } 
+    else {
+      reply = `🤖 **Apex AI Tutor**:\n\nGreat question, ${studentName || 'Student'}! Regarding *"_${question}_"*:\n\nFor 5th Semester CSE, remember to focus on core principles:\n- Review **Data Structures** (Trees, Graphs, Sorting)\n- Master **DBMS** SQL Queries & Normalization\n- Practice **OS** Semaphores & CPU Scheduling\n\nNeed specific code examples or theoretical concepts? Ask me anytime!`;
+    }
+
+    res.json({
+      success: true,
+      reply: reply,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
+
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

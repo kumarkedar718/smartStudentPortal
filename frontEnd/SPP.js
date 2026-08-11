@@ -174,6 +174,7 @@ function switchView(viewName) {
 }
 
 function capitalize(str) {
+  if (str === 'ai-assistant') return 'Ai-assistant';
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
@@ -186,7 +187,8 @@ function updateHeaderTitle(viewName) {
     assignments: { title: 'Subject Assignments & Projects', sub: 'Track coursework due dates and grade submissions' },
     fees: { title: 'Fee Payment & Receipts', sub: 'Semester tuition fees breakdown and transaction status' },
     marks: { title: 'Examination Performance', sub: 'Mid-Semester Examination marksheet & SGPA transcript' },
-    notes: { title: 'Study Notes & Materials', sub: 'Course reference handbooks & lecture cheat sheets' }
+    notes: { title: 'Study Notes & Materials', sub: 'Course reference handbooks & lecture cheat sheets' },
+    'ai-assistant': { title: 'AI Academic Doubt Solver', sub: 'Ask instant academic doubts, code help, and exam prep tips' }
   };
 
   const info = titles[viewName] || { title: 'Portal View', sub: '' };
@@ -295,7 +297,7 @@ async function loadDashboardData() {
       const ttData = await ttRes.json();
       let ttHtml = '';
       if (ttData.data && ttData.data.length > 0) {
-        ttData.data.forEach(item => {
+        ttData.data.slice(0, 6).forEach(item => {
           ttHtml += `
             <div class="course-item">
               <div class="course-info">
@@ -839,6 +841,88 @@ async function loadNotesData() {
   } catch (err) {
     container.innerHTML = '<p style="color:var(--danger)">Error loading notes.</p>';
   }
+}
+
+
+/* ==================== 9. AI ACADEMIC CHATBOT LOGIC ==================== */
+function fillAiPrompt(text) {
+  document.getElementById('aiQuestionInput').value = text;
+}
+
+async function handleSendAiMessage(e) {
+  e.preventDefault();
+  const input = document.getElementById('aiQuestionInput');
+  const question = input.value.trim();
+  const btnSend = document.getElementById('btnSendAi');
+  const chatWindow = document.getElementById('chatMessagesWindow');
+
+  if (!question) return;
+
+  // Render User Message Bubble
+  const userBubbleHtml = `
+    <div class="chat-msg user-msg">
+      <div class="msg-avatar"><i class="fa-solid fa-user-graduate"></i></div>
+      <div class="msg-content">
+        <p>${escapeHtmlText(question)}</p>
+      </div>
+    </div>
+  `;
+  chatWindow.insertAdjacentHTML('beforeend', userBubbleHtml);
+  input.value = '';
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+
+  // Show Typing Indicator
+  btnSend.disabled = true;
+  btnSend.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Thinking...';
+
+  try {
+    const res = await fetch(`${API_BASE}/student/ai-chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        question: question,
+        studentName: currentUser ? currentUser.name : 'Student'
+      })
+    });
+
+    const data = await res.json();
+    btnSend.disabled = false;
+    btnSend.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Ask AI';
+
+    if (data.success) {
+      // Render AI Message Bubble
+      const formattedReply = formatMarkdownSimple(data.reply);
+      const aiBubbleHtml = `
+        <div class="chat-msg ai-msg">
+          <div class="msg-avatar"><i class="fa-solid fa-robot"></i></div>
+          <div class="msg-content">
+            <div>${formattedReply}</div>
+            <span style="font-size:10px; color:var(--text-muted); display:block; margin-top:6px;">${data.timestamp}</span>
+          </div>
+        </div>
+      `;
+      chatWindow.insertAdjacentHTML('beforeend', aiBubbleHtml);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    } else {
+      alert('AI Chat error: ' + data.message);
+    }
+  } catch (err) {
+    btnSend.disabled = false;
+    btnSend.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Ask AI';
+    alert('Failed to reach AI Tutor server.');
+  }
+}
+
+function escapeHtmlText(str) {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function formatMarkdownSimple(text) {
+  let formatted = escapeHtmlText(text);
+  formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  formatted = formatted.replace(/\n/g, '<br/>');
+  return formatted;
 }
 
 
