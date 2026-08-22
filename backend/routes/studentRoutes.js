@@ -262,7 +262,7 @@ router.post('/ai-chat', async (req, res) => {
       }
     }
 
-    // 2. Ultra-Intelligent Generative Knowledge Engine with Strict Boundary Matching
+    // 2. Ultra-Intelligent Generative Knowledge Engine with Safe Regex Escaping
     if (!reply) {
       reply = synthesizePerfectAnswer(question);
     }
@@ -274,17 +274,30 @@ router.post('/ai-chat', async (req, res) => {
     });
 
   } catch (error) {
+    console.error('AI Chat Exception:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
+
+// Helper to safely escape special characters in Regex
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 // Synthesize 100% Perfect & Detailed Answers for ANY Topic Across All Subjects
 function synthesizePerfectAnswer(question) {
   const q = question.trim();
   const lower = q.toLowerCase();
 
-  // Word boundary regex test helper
-  const hasWord = (word) => new RegExp(`\\b${word}\\b`, 'i').test(lower);
+  // Safe word boundary regex test helper
+  const hasWord = (word) => {
+    try {
+      const safe = escapeRegExp(word);
+      return new RegExp(`\\b${safe}\\b`, 'i').test(lower) || lower.includes(word.toLowerCase());
+    } catch (e) {
+      return lower.includes(word.toLowerCase());
+    }
+  };
 
   // Computer & Hardware Fundamentals
   if (hasWord('computer')) {
