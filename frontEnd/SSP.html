@@ -487,24 +487,24 @@
         </section>
 
 
-        <!-- ==================== GEMINI AI ACADEMIC ASSISTANT VIEW ==================== -->
+        <!-- ==================== GEMINI AI UNIVERSAL EDUCATIONAL ASSISTANT VIEW ==================== -->
         <section id="viewAi-assistant" class="portal-view">
           <div class="dashboard-card">
             <div class="card-header" style="background: linear-gradient(135deg, #1e1b4b, #4338ca); color:white;">
-              <h3 style="color:white;"><i class="fa-solid fa-sparkles" style="color:#38bdf8;"></i> Gemini AI Academic Assistant & Universal Doubt Solver</h3>
-              <span class="badge" style="background:rgba(255,255,255,0.2); color:white;">GIET AI Study Engine</span>
+              <h3 style="color:white;"><i class="fa-solid fa-sparkles" style="color:#38bdf8;"></i> Gemini 1.5 Flash AI Assistant</h3>
+              <span class="badge" style="background:rgba(255,255,255,0.2); color:white;">Ask Anything (Educational Purpose)</span>
             </div>
             <div class="card-body" style="padding: 20px;">
               
-              <!-- Prompt Suggestions Chips -->
+              <!-- Gemini Mobile App Prompt Suggestions Chips -->
               <div class="prompt-chips">
-                <span class="chip-title"><i class="fa-solid fa-lightbulb"></i> Suggested Doubts:</span>
-                <button type="button" class="chip-btn" onclick="fillAiPrompt('Explain Binary Search Tree insertion and deletion algorithm with C++ code')">🌲 BST Algorithm</button>
-                <button type="button" class="chip-btn" onclick="fillAiPrompt('What is 3NF Normalization in DBMS with an example?')">🗄️ 3NF Normalization</button>
-                <button type="button" class="chip-btn" onclick="fillAiPrompt('Explain TCP 3-Way Handshake step by step')">🌐 TCP Handshake</button>
-                <button type="button" class="chip-btn" onclick="fillAiPrompt('Difference between Process and Thread in Operating Systems')">⚙️ Process vs Thread</button>
-                <button type="button" class="chip-btn" onclick="fillAiPrompt('Write a Python script for factorial calculation')">🐍 Python Code</button>
-                <button type="button" class="chip-btn" onclick="fillAiPrompt('How to prepare for B.Tech Semester Exams at GIET?')">📚 Exam Prep Guide</button>
+                <span class="chip-title"><i class="fa-solid fa-compass"></i> Ask Gemini Anything:</span>
+                <button type="button" class="chip-btn" onclick="fillAiPrompt('Solve Calculus Integration and Matrix Multiplication problem step by step')">🧮 Calculus & Math</button>
+                <button type="button" class="chip-btn" onclick="fillAiPrompt('Write a Python script for Data Analysis and Sorting')">🐍 Python Coding</button>
+                <button type="button" class="chip-btn" onclick="fillAiPrompt('Explain Physics Quantum Mechanics and Thermodynamics principles')">⚛️ Physics & Science</button>
+                <button type="button" class="chip-btn" onclick="fillAiPrompt('Draft a Statement of Purpose (SOP) for Higher Studies')">📝 SOP & Essay Writing</button>
+                <button type="button" class="chip-btn" onclick="fillAiPrompt('GATE Exam Preparation Strategy for Computer Science')">🎯 GATE Exam Strategy</button>
+                <button type="button" class="chip-btn" onclick="fillAiPrompt('Explain Binary Search Tree and Graph Traversals algorithm with code')">🌲 DSA Algorithms</button>
               </div>
 
               <!-- Chat Message Window -->
@@ -512,14 +512,14 @@
                 <div class="chat-msg ai-msg">
                   <div class="msg-avatar" style="background:linear-gradient(135deg, #0284c7, #38bdf8);"><i class="fa-solid fa-sparkles"></i></div>
                   <div class="msg-content">
-                    <p>✨ Welcome to <strong>Gemini AI Universal Tutor</strong> at Gandhi Institute for Education and Technology! Ask me ANY question on programming, data structures, general knowledge, science, or exam preparation!</p>
+                    <p>✨ Hi! I am <strong>Google Gemini AI Educational Assistant</strong>. You can ask me ANY question regarding Mathematics, Coding (Python, C++, Java, JS), Physics, History, Essay Writing, Competitive Exams, or Career Advice!</p>
                   </div>
                 </div>
               </div>
 
               <!-- Chat Input Box -->
               <form id="aiChatForm" class="chat-input-bar" onsubmit="handleSendAiMessage(event)">
-                <input type="text" id="aiQuestionInput" class="form-control" placeholder="Ask Gemini AI ANY question (e.g. Write a Python script, Explain 3NF, How TCP works)..." required />
+                <input type="text" id="aiQuestionInput" class="form-control" placeholder="Ask Gemini ANY question (e.g. Solve Calculus, Write Python code, Explain Physics)..." required />
                 <button type="submit" class="btn-primary" id="btnSendAi" style="background:linear-gradient(135deg, #4f46e5, #0284c7);">
                   <i class="fa-solid fa-paper-plane"></i> Ask Gemini
                 </button>
