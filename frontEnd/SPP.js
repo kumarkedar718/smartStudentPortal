@@ -367,20 +367,27 @@ async function loadDashboardData() {
       const stats = result.data;
 
       statContainer.innerHTML = `
-        <div class="stat-card card-blue">
+        <div class="stat-card card-blue" style="cursor:pointer;" onclick="switchView('teachers')" title="View Students Directory">
           <div class="stat-val">${stats.assignedCoursesCount}</div>
-          <div class="stat-title">Assigned Course</div>
+          <div class="stat-title">Assigned Subjects</div>
           <i class="fa-solid fa-chalkboard-user stat-icon"></i>
         </div>
-        <div class="stat-card card-green">
+        <div class="stat-card card-green" style="cursor:pointer;" onclick="switchView('teachers')" title="View Students Roster">
           <div class="stat-val">${stats.totalStudentsCount}</div>
           <div class="stat-title">Registered Students</div>
           <i class="fa-solid fa-user-graduate stat-icon"></i>
         </div>
-        <div class="stat-card card-orange">
-          <div class="stat-val">${stats.pendingGradingCount}</div>
-          <div class="stat-title">Submissions to Grade</div>
-          <i class="fa-solid fa-list-check stat-icon"></i>
+        <div class="stat-card card-orange" style="cursor:pointer; border:2px solid #f97316; box-shadow:0 6px 20px rgba(249,115,22,0.25);" onclick="switchView('assignments')" title="Click to Grade Submissions Now">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div class="stat-val" style="font-size:32px; font-weight:900;">${stats.pendingGradingCount}</div>
+              <div class="stat-title" style="font-weight:700;">Submissions to Grade</div>
+            </div>
+            <i class="fa-solid fa-file-signature stat-icon" style="opacity:0.9;"></i>
+          </div>
+          <div style="margin-top:10px;">
+            <span class="badge badge-warning" style="font-size:11px; padding:4px 8px; background:#fff; color:#c2410c; font-weight:700;"><i class="fa-solid fa-arrow-right"></i> Click to Grade Now</span>
+          </div>
         </div>
       `;
 
@@ -388,12 +395,19 @@ async function loadDashboardData() {
       if (stats.courses && stats.courses.length > 0) {
         stats.courses.forEach(c => {
           coursesHtml += `
-            <div class="course-item">
+            <div class="course-item" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
               <div class="course-info">
                 <h4>${c.course_name} (${c.course_code})</h4>
-                <p>Credits: ${c.credits} | Total GIET CSE Students: ${stats.totalStudentsCount}</p>
+                <p>Credits: ${c.credits} | Total Enrolled Students: ${stats.totalStudentsCount}</p>
               </div>
-              <button class="btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="switchView('attendance')">Mark Attendance</button>
+              <div style="display:flex; gap:6px;">
+                <button class="btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="switchView('assignments')">
+                  <i class="fa-solid fa-pen-to-square"></i> Grade Submissions
+                </button>
+                <button class="btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="switchView('attendance')">
+                  <i class="fa-solid fa-clipboard-check"></i> Attendance
+                </button>
+              </div>
             </div>
           `;
         });
@@ -401,12 +415,22 @@ async function loadDashboardData() {
       coursesContainer.innerHTML = coursesHtml || '<p style="color:var(--text-muted)">No assigned courses.</p>';
 
       scheduleContainer.innerHTML = `
-        <div class="course-item">
+        <div class="course-item" style="margin-bottom:12px;">
           <div class="course-info">
-            <h4>${stats.courses[0] ? stats.courses[0].course_name : 'Subject Lecture'}</h4>
-            <p>Weekly Schedule • Room 301 / Lab 102</p>
+            <h4>Faculty Quick Actions</h4>
+            <p>Direct navigation for assessment & evaluation</p>
           </div>
-          <span class="badge badge-success">Active Faculty</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <button class="btn-primary" style="width:100%; justify-content:center; padding:10px; font-weight:700;" onclick="switchView('assignments')">
+            <i class="fa-solid fa-award"></i> Go to Student Submissions & Grade
+          </button>
+          <button class="btn-secondary" style="width:100%; justify-content:center; padding:10px; font-weight:700;" onclick="openCreateAssignmentModal()">
+            <i class="fa-solid fa-plus-circle"></i> Create New Class Assignment
+          </button>
+          <button class="btn-secondary" style="width:100%; justify-content:center; padding:10px; font-weight:700;" onclick="switchView('attendance')">
+            <i class="fa-solid fa-clipboard-user"></i> Mark Daily Student Attendance
+          </button>
         </div>
       `;
     } catch (err) {
