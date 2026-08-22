@@ -1312,9 +1312,18 @@ async function createAssignmentAction() {
 function openGradeModal(submissionId, subText, currentMarks, currentFeedback) {
   document.getElementById('gradeSubmissionId').value = submissionId;
   document.getElementById('gradeSubmissionPreview').innerText = subText || 'No text submitted.';
-  document.getElementById('gradeMarksInput').value = currentMarks || '';
+  document.getElementById('gradeMarksInput').value = (currentMarks !== null && currentMarks !== undefined && currentMarks !== '') ? currentMarks : '';
   document.getElementById('gradeFeedbackInput').value = currentFeedback || '';
   document.getElementById('gradeSubmissionModal').style.display = 'flex';
+}
+
+// Quick Grade Preset Setter
+function setGradePreset(marks, feedbackText) {
+  document.getElementById('gradeMarksInput').value = marks;
+  const feedbackEl = document.getElementById('gradeFeedbackInput');
+  if (!feedbackEl.value.trim()) {
+    feedbackEl.value = feedbackText;
+  }
 }
 
 async function saveGradeAction() {
@@ -1322,8 +1331,14 @@ async function saveGradeAction() {
   const marks_obtained = document.getElementById('gradeMarksInput').value;
   const feedback = document.getElementById('gradeFeedbackInput').value.trim();
 
-  if (marks_obtained === '') {
-    alert('Please enter marks.');
+  if (marks_obtained === '' || marks_obtained === null || marks_obtained === undefined) {
+    alert('Please enter valid marks for evaluation.');
+    return;
+  }
+
+  const parsedMarks = parseInt(marks_obtained);
+  if (isNaN(parsedMarks)) {
+    alert('Please enter a valid numeric value for marks.');
     return;
   }
 
@@ -1332,18 +1347,22 @@ async function saveGradeAction() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        submission_id,
-        marks_obtained: parseInt(marks_obtained),
-        feedback
+        submission_id: parseInt(submission_id),
+        marks_obtained: parsedMarks,
+        feedback: feedback || 'Evaluated & Graded by GIET Faculty.'
       })
     });
     const data = await res.json();
     if (data.success) {
-      alert('Grade saved successfully!');
+      alert('Grade saved successfully! Status updated to Graded.');
       closeModal('gradeSubmissionModal');
-      loadAssignmentsData();
+      
+      // Refresh Submissions Table & Dashboard Stat Cards
+      if (typeof loadTeacherSubmissionsData === 'function') loadTeacherSubmissionsData();
+      if (typeof loadAssignmentsData === 'function') loadAssignmentsData();
+      if (typeof loadDashboardData === 'function') loadDashboardData();
     } else {
-      alert('Failed: ' + data.message);
+      alert('Failed to save grade: ' + data.message);
     }
   } catch (err) {
     alert('Error grading submission: ' + err.message);

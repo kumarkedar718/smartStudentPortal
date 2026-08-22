@@ -290,11 +290,21 @@ function initSQLiteFallback() {
         (5, 5, 5, 'TCP/IP Packet Sniffing & Subnetting Lab', 'Perform Wireshark packet capture analysis and calculate Classless Inter-Domain Routing (CIDR) subnets.', '2026-08-30', 50),
         (6, 6, 6, 'DFA & NFA State Minimization Assignment', 'Construct Minimal DFA for given regular expressions and convert NFA with epsilon transitions.', '2026-09-02', 50)`);
 
-      // Submissions
+      // Submissions for All 6 Teachers
       sqliteDb.run(`INSERT INTO submissions (id, assignment_id, student_id, submission_text, status, marks_obtained, feedback) VALUES
-        (1, 1, 1, 'GitHub Repository Link: https://github.com/rahulsharma/bst-traversals-project. Includes unit tests for BST deletion.', 'Graded', 48, 'Outstanding work! Very clean code structure and comprehensive test cases.'),
-        (2, 2, 1, 'Submitted SRS document PDF version 1.2 with complete IEEE standard template and Use Case diagrams.', 'Pending', NULL, NULL),
-        (3, 4, 1, 'SQL queries file uploaded with ER diagram and 3NF normalization justification.', 'Graded', 92, 'Excellent DB schema design.')`);
+        (1, 1, 1, 'GitHub Repo: https://github.com/rahulsharma/bst-project. Contains Java BST insertion & level order BFS code.', 'Graded', 48, 'Outstanding work! Very clean Java code structure.'),
+        (2, 1, 2, 'Priya Patel BST Assignment submission with C++ tree traversal source code.', 'Pending', NULL, NULL),
+        (3, 1, 3, 'Amit Verma DSA Assignment 1 submitted. Includes BFS & DFS graph algorithms.', 'Pending', NULL, NULL),
+        (4, 2, 1, 'Submitted SRS document PDF version 1.2 with IEEE standard template and Use Case diagrams.', 'Pending', NULL, NULL),
+        (5, 2, 4, 'Sneha Gupta Software Engg Assignment submission link: https://drive.google.com/file/d/srs-doc', 'Pending', NULL, NULL),
+        (6, 3, 1, 'POSIX Threads Producer-Consumer solution code using semaphores in C.', 'Pending', NULL, NULL),
+        (7, 3, 5, 'Rohan Singh OS Assignment submission: Producer Consumer & Reader Writer solution.', 'Pending', NULL, NULL),
+        (8, 4, 1, 'SQL queries file uploaded with ER diagram and 3NF normalization justification.', 'Graded', 92, 'Excellent DB schema design.'),
+        (9, 4, 2, 'Priya Patel DBMS Assignment 4 - Hospital Management Database normalization queries.', 'Pending', NULL, NULL),
+        (10, 5, 1, 'Wireshark packet capture analysis PDF report with CIDR subnetting calculations.', 'Pending', NULL, NULL),
+        (11, 5, 3, 'Computer Networks Assignment 5 submission by Amit Verma.', 'Pending', NULL, NULL),
+        (12, 6, 1, 'Minimal DFA state transition table and NFA with epsilon transition conversion.', 'Pending', NULL, NULL),
+        (13, 6, 4, 'Automata Theory Assignment 6 submission by Sneha Gupta.', 'Pending', NULL, NULL)`);
 
       // Fees
       sqliteDb.run(`INSERT INTO fees (id, student_id, fee_type, total_amount, paid_amount, due_date, status) VALUES

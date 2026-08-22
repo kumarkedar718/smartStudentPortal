@@ -18,7 +18,7 @@ router.get('/dashboard/:teacherId', async (req, res) => {
       `SELECT COUNT(s.id) as count
        FROM submissions s
        JOIN assignments a ON s.assignment_id = a.id
-       WHERE a.teacher_id = ? AND s.status = 'Pending'`,
+       WHERE a.teacher_id = ? AND (s.status = 'Pending' OR s.status IS NULL)`,
       [teacherId]
     );
 
@@ -53,7 +53,7 @@ router.get('/courses/:teacherId', async (req, res) => {
   }
 });
 
-// 3. Get Student Roster (All students or filter by course)
+// 3. Get Student Roster
 router.get('/students', async (req, res) => {
   try {
     const courseId = req.query.courseId;
@@ -78,7 +78,7 @@ router.get('/students', async (req, res) => {
 // 4. Mark / Save Attendance
 router.post('/attendance', async (req, res) => {
   try {
-    const { course_id, date, records } = req.body; // records: [{ student_id, status }]
+    const { course_id, date, records } = req.body;
 
     if (!course_id || !date || !Array.isArray(records)) {
       return res.status(400).json({ success: false, message: 'Invalid payload.' });
@@ -124,7 +124,7 @@ router.post('/assignments', async (req, res) => {
       [course_id, teacher_id, title, description || '', due_date, total_marks || 100]
     );
 
-    res.json({ success: true, message: 'Assignment created successfully!' });
+    res.json({ success: true, message: 'Assignment posted successfully!' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -136,7 +136,7 @@ router.get('/submissions/:teacherId', async (req, res) => {
     const teacherId = req.params.teacherId;
 
     const submissions = await db.query(
-      `SELECT s.*, a.title as assignment_title, a.total_marks, c.course_name,
+      `SELECT s.*, a.title as assignment_title, a.total_marks, c.course_name, c.course_code,
               u.name as student_name, stu.roll_number
        FROM submissions s
        JOIN assignments a ON s.assignment_id = a.id
@@ -144,7 +144,7 @@ router.get('/submissions/:teacherId', async (req, res) => {
        JOIN students stu ON s.student_id = stu.id
        JOIN users u ON stu.user_id = u.id
        WHERE a.teacher_id = ?
-       ORDER BY s.submission_date DESC`,
+       ORDER BY s.id DESC`,
       [teacherId]
     );
 
@@ -154,22 +154,32 @@ router.get('/submissions/:teacherId', async (req, res) => {
   }
 });
 
-// 7. Grade Submission
+// 7. Robust Grade Submission Endpoint
 router.post('/submissions/grade', async (req, res) => {
   try {
     const { submission_id, marks_obtained, feedback } = req.body;
 
-    if (!submission_id || marks_obtained === undefined) {
+    if (submission_id === undefined || submission_id === null || marks_obtained === undefined || marks_obtained === null || marks_obtained === '') {
       return res.status(400).json({ success: false, message: 'Submission ID and marks are required.' });
+    }
+
+    const marksNum = parseInt(marks_obtained);
+    if (isNaN(marksNum)) {
+      return res.status(400).json({ success: false, message: 'Marks must be a valid number.' });
     }
 
     await db.query(
       `UPDATE submissions SET marks_obtained = ?, feedback = ?, status = 'Graded' WHERE id = ?`,
-      [marks_obtained, feedback || '', submission_id]
+      [marksNum, feedback || 'Evaluated by Subject Faculty.', submission_id]
     );
 
-    res.json({ success: true, message: 'Submission graded successfully!' });
+    res.json({
+      success: true,
+      message: `Grade successfully assigned! Marks: ${marksNum}`,
+      data: { submission_id, marks_obtained: marksNum, status: 'Graded' }
+    });
   } catch (error) {
+    console.error('Grade submission error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
