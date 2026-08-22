@@ -43,6 +43,59 @@ body {
   overflow-x: hidden;
 }
 
+/* QUESTION BANK ACCORDION STYLES */
+.qb-section-box {
+  background: white;
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.qb-section-box h5 {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 8px;
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 4px;
+}
+
+.qb-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.qb-list li {
+  color: #0284c7;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  transition: var(--transition);
+  font-weight: 600;
+}
+
+.qb-list li:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: translateX(4px);
+}
+
+.qb-category-pane {
+  display: none;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.qb-category-pane.active {
+  display: block;
+}
+
 /* ==================== AUTH SCREEN ==================== */
 .auth-wrapper {
   display: flex;
@@ -111,13 +164,14 @@ body {
   font-size: 13px;
   font-weight: 700;
   color: var(--text-muted);
-  border-radius: 9px;
+  border-radius: 99px;
   cursor: pointer;
   transition: var(--transition);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  white-space: nowrap;
 }
 
 .role-tab.active {

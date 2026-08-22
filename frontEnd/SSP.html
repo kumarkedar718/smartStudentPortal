@@ -490,73 +490,267 @@
         <!-- ==================== GEMINI AI OFFICIAL REST API ASSISTANT VIEW ==================== -->
         <section id="viewAi-assistant" class="portal-view">
           
-          <!-- Master Recommended Questions List Card -->
+          <!-- Master Subject-Wise Question Bank Accordion Card -->
           <div class="dashboard-card" style="margin-bottom: 20px;">
             <div class="card-header" style="background:linear-gradient(135deg, #0f172a, #1e293b); color:white;">
-              <h3 style="color:white;"><i class="fa-solid fa-list-check" style="color:#38bdf8;"></i> Recommended Questions List (100% Verified Answers)</h3>
-              <span class="badge badge-success">Click Any Question to Ask</span>
+              <h3 style="color:white;"><i class="fa-solid fa-book-bookmark" style="color:#38bdf8;"></i> B.Tech CSE Semester 5 - Master Exam Question Bank</h3>
+              <span class="badge badge-success">Click Any Question to Get Instant Answer</span>
             </div>
-            <div class="card-body" style="padding:15px;">
-              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
-                
-                <!-- Subject 1: Data Structures -->
-                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:10px;">
-                  <h4 style="font-size:13px; font-weight:800; color:var(--primary); margin-bottom:8px;"><i class="fa-solid fa-tree"></i> Data Structures (CS501)</h4>
-                  <ul style="list-style:none; display:flex; flex-direction:column; gap:6px; font-size:12px;">
-                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('Class and object')">📌 Class and Object definition & C++ code</li>
-                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('What is Binary Search Tree (BST)')">📌 Binary Search Tree (BST) & Binary Search</li>
-                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('Difference between Array and Linked List')">📌 Array vs Linked List comparison</li>
-                  </ul>
-                </div>
 
-                <!-- Subject 2: Software Engineering -->
-                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:10px;">
-                  <h4 style="font-size:13px; font-weight:800; color:#0284c7; margin-bottom:8px;"><i class="fa-solid fa-gears"></i> Software Engg (CS502)</h4>
-                  <ul style="list-style:none; display:flex; flex-direction:column; gap:6px; font-size:12px;">
-                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('Waterfall vs Agile SDLC model')">📌 Waterfall vs Agile SDLC model</li>
-                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('Black box vs White box testing')">📌 Black-box vs White-box software testing</li>
-                  </ul>
-                </div>
+            <!-- Subject Tab Buttons -->
+            <div style="background:#f1f5f9; padding:8px 16px; display:flex; gap:8px; overflow-x:auto; border-bottom:1px solid #e2e8f0;">
+              <button class="role-tab active" id="tabQbOs" onclick="switchQbTab('os')"><i class="fa-solid fa-microchip"></i> Operating Systems</button>
+              <button class="role-tab" id="tabQbDsa" onclick="switchQbTab('dsa')"><i class="fa-solid fa-tree"></i> DSA & Algorithms</button>
+              <button class="role-tab" id="tabQbSe" onclick="switchQbTab('se')"><i class="fa-solid fa-gears"></i> Software Engg</button>
+              <button class="role-tab" id="tabQbDbms" onclick="switchQbTab('dbms')"><i class="fa-solid fa-database"></i> DBMS & SQL</button>
+              <button class="role-tab" id="tabQbCn" onclick="switchQbTab('cn')"><i class="fa-solid fa-network-wired"></i> Networks</button>
+              <button class="role-tab" id="tabQbToc" onclick="switchQbTab('toc')"><i class="fa-solid fa-calculator"></i> Automata / TOC</button>
+            </div>
 
-                <!-- Subject 3: Operating Systems -->
-                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:10px;">
-                  <h4 style="font-size:13px; font-weight:800; color:#9333ea; margin-bottom:8px;"><i class="fa-solid fa-microchip"></i> Operating Systems (CS503)</h4>
-                  <ul style="list-style:none; display:flex; flex-direction:column; gap:6px; font-size:12px;">
-                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('deadlock')">📌 What is Deadlock & 4 necessary conditions</li>
-                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('semaphore')">📌 What is Semaphore & Mutex</li>
-                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('paging')">📌 What is Paging & Virtual Memory</li>
-                  </ul>
-                </div>
+            <div class="card-body" style="padding:15px; max-height:380px; overflow-y:auto;">
+              
+              <!-- CATEGORY 1: OPERATING SYSTEMS (CS503) -->
+              <div id="qbCategoryOs" class="qb-category-pane active">
+                <h4 style="font-size:14px; color:var(--primary); font-weight:800; margin-bottom:10px;"><i class="fa-solid fa-microchip"></i> Operating Systems (CS503) - Comprehensive Exam Questions</h4>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:10px;">
+                  
+                  <div class="qb-section-box">
+                    <h5>Process Management & CPU Scheduling</h5>
+                    <ul class="qb-list">
+                      <li onclick="fillAndSendAiPrompt('What is a process, and how does it differ from a program and a thread?')">📌 What is a process vs program vs thread?</li>
+                      <li onclick="fillAndSendAiPrompt('Describe the different states of a process lifecycle')">📌 Process Lifecycle States</li>
+                      <li onclick="fillAndSendAiPrompt('What is a Process Control Block (PCB), and what information does it store?')">📌 Process Control Block (PCB)</li>
+                      <li onclick="fillAndSendAiPrompt('Explain context switching and why it overheads the system')">📌 Context Switching & Overhead</li>
+                      <li onclick="fillAndSendAiPrompt('Difference between preemptive and non-preemptive scheduling')">📌 Preemptive vs Non-Preemptive Scheduling</li>
+                      <li onclick="fillAndSendAiPrompt('Explain FCFS and SJF scheduling algorithms')">📌 FCFS & SJF Scheduling Algorithms</li>
+                      <li onclick="fillAndSendAiPrompt('How does Round Robin (RR) scheduling work, and how does time quantum affect it?')">📌 Round Robin (RR) & Time Quantum</li>
+                      <li onclick="fillAndSendAiPrompt('What is Priority Scheduling, and how do you solve starvation?')">📌 Priority Scheduling & Starvation</li>
+                    </ul>
+                  </div>
 
-                <!-- Subject 4: DBMS -->
-                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:10px;">
-                  <h4 style="font-size:13px; font-weight:800; color:#166534; margin-bottom:8px;"><i class="fa-solid fa-database"></i> DBMS & SQL (CS504)</h4>
-                  <ul style="list-style:none; display:flex; flex-direction:column; gap:6px; font-size:12px;">
-                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('3nf')">📌 What is 3NF Normalization in DBMS</li>
-                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('sql joins')">📌 SQL INNER JOIN, LEFT JOIN, RIGHT JOIN</li>
-                  </ul>
-                </div>
+                  <div class="qb-section-box">
+                    <h5>Synchronization & Deadlocks</h5>
+                    <ul class="qb-list">
+                      <li onclick="fillAndSendAiPrompt('What is critical section problem and requirements to solve it?')">📌 Critical Section Problem</li>
+                      <li onclick="fillAndSendAiPrompt('Explain race condition with an example')">📌 Race Condition & Example</li>
+                      <li onclick="fillAndSendAiPrompt('What is a semaphore? Differentiate between binary and counting semaphores')">📌 Binary vs Counting Semaphores</li>
+                      <li onclick="fillAndSendAiPrompt('Explain Producer-Consumer problem using semaphores')">📌 Producer-Consumer Problem</li>
+                      <li onclick="fillAndSendAiPrompt('What is a deadlock? State the four necessary conditions')">📌 Deadlock & 4 Necessary Conditions</li>
+                      <li onclick="fillAndSendAiPrompt('How does Bankers Algorithm work for deadlock avoidance?')">📌 Banker's Algorithm for Avoidance</li>
+                    </ul>
+                  </div>
 
-                <!-- Subject 5: Networks -->
-                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:10px;">
-                  <h4 style="font-size:13px; font-weight:800; color:#c2410c; margin-bottom:8px;"><i class="fa-solid fa-network-wired"></i> Networks (CS505)</h4>
-                  <ul style="list-style:none; display:flex; flex-direction:column; gap:6px; font-size:12px;">
-                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('osi model')">📌 Explain OSI 7-Layer Reference Model</li>
-                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('tcp 3 way handshake')">📌 What is TCP 3-Way Handshake</li>
-                  </ul>
-                </div>
+                  <div class="qb-section-box">
+                    <h5>Memory Management & File Systems</h5>
+                    <ul class="qb-list">
+                      <li onclick="fillAndSendAiPrompt('What is fragmentation? Internal vs external fragmentation')">📌 Internal vs External Fragmentation</li>
+                      <li onclick="fillAndSendAiPrompt('Explain Paging and Page Table')">📌 Paging & Page Table Mechanism</li>
+                      <li onclick="fillAndSendAiPrompt('What is Translation Lookaside Buffer (TLB)?')">📌 Translation Lookaside Buffer (TLB)</li>
+                      <li onclick="fillAndSendAiPrompt('What is Virtual Memory and demand paging?')">📌 Virtual Memory & Demand Paging</li>
+                      <li onclick="fillAndSendAiPrompt('FIFO, Optimal, and LRU page replacement algorithms')">📌 Page Replacement (FIFO, LRU, Optimal)</li>
+                      <li onclick="fillAndSendAiPrompt('What is an inode in UNIX/Linux file systems?')">📌 UNIX/Linux inode Structure</li>
+                    </ul>
+                  </div>
 
-                <!-- Subject 6: Automata & Science -->
-                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:10px;">
-                  <h4 style="font-size:13px; font-weight:800; color:#b91c1c; margin-bottom:8px;"><i class="fa-solid fa-flask"></i> Automata & Science</h4>
-                  <ul style="list-style:none; display:flex; flex-direction:column; gap:6px; font-size:12px;">
-                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('dfa vs nfa')">📌 DFA vs NFA in Automata Theory</li>
-                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('photosynthesis')">📌 What is Photosynthesis equation & stages</li>
-                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('what is computer')">📌 What is Computer architecture & IPO cycle</li>
-                  </ul>
                 </div>
-
               </div>
+
+
+              <!-- CATEGORY 2: DATA STRUCTURES & ALGORITHMS (CS501) -->
+              <div id="qbCategoryDsa" class="qb-category-pane" style="display:none;">
+                <h4 style="font-size:14px; color:#0284c7; font-weight:800; margin-bottom:10px;"><i class="fa-solid fa-tree"></i> Data Structures & Algorithms (CS501) - Master Coding Questions</h4>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:10px;">
+                  
+                  <div class="qb-section-box">
+                    <h5>Arrays, Two Pointers & Sliding Window</h5>
+                    <ul class="qb-list">
+                      <li onclick="fillAndSendAiPrompt('Two Sum problem code in C++')">📌 Two Sum Problem (Target Sum)</li>
+                      <li onclick="fillAndSendAiPrompt('Best Time to Buy and Sell Stock solution')">📌 Buy and Sell Stock (Max Profit)</li>
+                      <li onclick="fillAndSendAiPrompt('Product of Array Except Self without division')">📌 Product of Array Except Self</li>
+                      <li onclick="fillAndSendAiPrompt('Kadanes Algorithm for Maximum Subarray Sum')">📌 Kadane's Algorithm (Max Subarray)</li>
+                      <li onclick="fillAndSendAiPrompt('Valid Palindrome two pointer technique')">📌 Valid Palindrome String</li>
+                      <li onclick="fillAndSendAiPrompt('Longest Substring Without Repeating Characters')">📌 Longest Substring Without Repeats</li>
+                    </ul>
+                  </div>
+
+                  <div class="qb-section-box">
+                    <h5>Stacks, Queues & Linked Lists</h5>
+                    <ul class="qb-list">
+                      <li onclick="fillAndSendAiPrompt('Valid Parentheses stack solution')">📌 Valid Parentheses Stack Matching</li>
+                      <li onclick="fillAndSendAiPrompt('Min Stack O(1) time complexity')">📌 Min Stack Design O(1)</li>
+                      <li onclick="fillAndSendAiPrompt('Reverse a Linked List code')">📌 Reverse a Linked List</li>
+                      <li onclick="fillAndSendAiPrompt('Detect Cycle in Linked List Floyd Cycle Algorithm')">📌 Detect Cycle (Floyd's Tortoise)</li>
+                      <li onclick="fillAndSendAiPrompt('Merge Two Sorted Linked Lists')">📌 Merge Two Sorted Lists</li>
+                    </ul>
+                  </div>
+
+                  <div class="qb-section-box">
+                    <h5>Trees, Graphs & Dynamic Programming</h5>
+                    <ul class="qb-list">
+                      <li onclick="fillAndSendAiPrompt('Invert Binary Tree solution')">📌 Invert Binary Tree</li>
+                      <li onclick="fillAndSendAiPrompt('Binary Tree Level Order Traversal BFS')">📌 Binary Tree Level Order BFS</li>
+                      <li onclick="fillAndSendAiPrompt('Validate Binary Search Tree BST')">📌 Validate Binary Search Tree</li>
+                      <li onclick="fillAndSendAiPrompt('Number of Islands 2D Grid DFS BFS')">📌 Number of Islands (Grid BFS/DFS)</li>
+                      <li onclick="fillAndSendAiPrompt('Climbing Stairs Dynamic Programming')">📌 Climbing Stairs DP</li>
+                      <li onclick="fillAndSendAiPrompt('0/1 Knapsack Problem Dynamic Programming')">📌 0/1 Knapsack Problem DP</li>
+                    </ul>
+                  </div>
+
+                </div>
+              </div>
+
+
+              <!-- CATEGORY 3: SOFTWARE ENGINEERING (CS502) -->
+              <div id="qbCategorySe" class="qb-category-pane" style="display:none;">
+                <h4 style="font-size:14px; color:#9333ea; font-weight:800; margin-bottom:10px;"><i class="fa-solid fa-gears"></i> Software Engineering (CS502) - Architecture & Patterns</h4>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:10px;">
+                  
+                  <div class="qb-section-box">
+                    <h5>System Design & Architecture</h5>
+                    <ul class="qb-list">
+                      <li onclick="fillAndSendAiPrompt('Monolithic vs Microservices Architectures')">📌 Monolithic vs Microservices Architecture</li>
+                      <li onclick="fillAndSendAiPrompt('Horizontal vs Vertical Scaling')">📌 Horizontal vs Vertical Scaling</li>
+                      <li onclick="fillAndSendAiPrompt('CAP Theorem in Distributed Systems')">📌 CAP Theorem (Consistency, Availability, Partition)</li>
+                      <li onclick="fillAndSendAiPrompt('Load Balancers and algorithms')">📌 Load Balancer Algorithms</li>
+                    </ul>
+                  </div>
+
+                  <div class="qb-section-box">
+                    <h5>SOLID Principles & Design Patterns</h5>
+                    <ul class="qb-list">
+                      <li onclick="fillAndSendAiPrompt('SOLID Principles of OOP')">📌 SOLID Principles of OOP Design</li>
+                      <li onclick="fillAndSendAiPrompt('Singleton Pattern and downsides')">📌 Singleton Pattern & Implementation</li>
+                      <li onclick="fillAndSendAiPrompt('Factory Pattern vs Abstract Factory')">📌 Factory vs Abstract Factory Pattern</li>
+                      <li onclick="fillAndSendAiPrompt('Dependency Injection')">📌 Dependency Injection Explained</li>
+                      <li onclick="fillAndSendAiPrompt('MVC Model View Controller Architecture')">📌 MVC Architecture Pattern</li>
+                    </ul>
+                  </div>
+
+                  <div class="qb-section-box">
+                    <h5>DevOps, Testing & Web Security</h5>
+                    <ul class="qb-list">
+                      <li onclick="fillAndSendAiPrompt('Unit vs Integration vs End-to-End Testing')">📌 Unit vs Integration vs E2E Testing</li>
+                      <li onclick="fillAndSendAiPrompt('Continuous Integration and Deployment CI CD')">📌 CI/CD Pipeline Concepts</li>
+                      <li onclick="fillAndSendAiPrompt('Docker Containerization vs Virtualization')">📌 Containerization (Docker) vs VMs</li>
+                      <li onclick="fillAndSendAiPrompt('REST vs GraphQL vs gRPC')">📌 REST API vs GraphQL vs gRPC</li>
+                    </ul>
+                  </div>
+
+                </div>
+              </div>
+
+
+              <!-- CATEGORY 4: DATABASE MANAGEMENT SYSTEMS (CS504) -->
+              <div id="qbCategoryDbms" class="qb-category-pane" style="display:none;">
+                <h4 style="font-size:14px; color:#166534; font-weight:800; margin-bottom:10px;"><i class="fa-solid fa-database"></i> Database Management Systems (CS504) - RDBMS & Normalization</h4>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:10px;">
+                  
+                  <div class="qb-section-box">
+                    <h5>ER Modeling & Relational Keys</h5>
+                    <ul class="qb-list">
+                      <li onclick="fillAndSendAiPrompt('Three Schema Architecture DBMS')">📌 Three-Schema DBMS Architecture</li>
+                      <li onclick="fillAndSendAiPrompt('Primary Key vs Candidate Key vs Foreign Key')">📌 Candidate Key vs Primary Key vs Foreign Key</li>
+                      <li onclick="fillAndSendAiPrompt('ER Diagram Entities Attributes Relationships')">📌 ER Diagram Constructs & Cardinality</li>
+                    </ul>
+                  </div>
+
+                  <div class="qb-section-box">
+                    <h5>SQL Queries & Normalization</h5>
+                    <ul class="qb-list">
+                      <li onclick="fillAndSendAiPrompt('DROP vs TRUNCATE vs DELETE in SQL')">📌 DROP vs TRUNCATE vs DELETE</li>
+                      <li onclick="fillAndSendAiPrompt('WHERE vs HAVING clause in SQL')">📌 WHERE Clause vs HAVING Clause</li>
+                      <li onclick="fillAndSendAiPrompt('1NF 2NF 3NF BCNF Normalization')">📌 1NF, 2NF, 3NF, BCNF Normalization</li>
+                      <li onclick="fillAndSendAiPrompt('SQL Joins INNER LEFT RIGHT FULL')">📌 SQL Joins (INNER, LEFT, RIGHT, FULL)</li>
+                    </ul>
+                  </div>
+
+                  <div class="qb-section-box">
+                    <h5>ACID Transactions & Indexing</h5>
+                    <ul class="qb-list">
+                      <li onclick="fillAndSendAiPrompt('ACID Properties in Database Transactions')">📌 ACID Properties (Atomicity, Consistency, Isolation, Durability)</li>
+                      <li onclick="fillAndSendAiPrompt('Two Phase Locking 2PL Concurrency Control')">📌 Two-Phase Locking (2PL) Protocol</li>
+                      <li onclick="fillAndSendAiPrompt('B Trees vs B+ Trees indexing')">📌 B-Trees vs B+ Trees Indexing</li>
+                    </ul>
+                  </div>
+
+                </div>
+              </div>
+
+
+              <!-- CATEGORY 5: COMPUTER NETWORKS (CS505) -->
+              <div id="qbCategoryCn" class="qb-category-pane" style="display:none;">
+                <h4 style="font-size:14px; color:#c2410c; font-weight:800; margin-bottom:10px;"><i class="fa-solid fa-network-wired"></i> Computer Networks (CS505) - Protocols & Architecture</h4>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:10px;">
+                  
+                  <div class="qb-section-box">
+                    <h5>OSI & Physical Layers</h5>
+                    <ul class="qb-list">
+                      <li onclick="fillAndSendAiPrompt('7 Layers of OSI model')">📌 7 Layers of OSI Reference Model</li>
+                      <li onclick="fillAndSendAiPrompt('MAC Address vs IP Address')">📌 MAC Address vs IP Address</li>
+                      <li onclick="fillAndSendAiPrompt('ARP Protocol Address Resolution')">📌 ARP (Address Resolution Protocol)</li>
+                      <li onclick="fillAndSendAiPrompt('Switch vs Hub vs Router')">📌 Switch vs Hub vs Router</li>
+                    </ul>
+                  </div>
+
+                  <div class="qb-section-box">
+                    <h5>IP Routing & Subnetting</h5>
+                    <ul class="qb-list">
+                      <li onclick="fillAndSendAiPrompt('IPv4 vs IPv6 addressing')">📌 IPv4 vs IPv6 Addressing</li>
+                      <li onclick="fillAndSendAiPrompt('Subnetting and Subnet Mask')">📌 Subnetting & CIDR Notation</li>
+                      <li onclick="fillAndSendAiPrompt('RIP OSPF BGP routing protocols')">📌 RIP vs OSPF vs BGP Routing</li>
+                    </ul>
+                  </div>
+
+                  <div class="qb-section-box">
+                    <h5>Transport & Security</h5>
+                    <ul class="qb-list">
+                      <li onclick="fillAndSendAiPrompt('TCP vs UDP difference')">📌 TCP vs UDP Transport Protocols</li>
+                      <li onclick="fillAndSendAiPrompt('TCP 3 Way Handshake SYN SYN-ACK ACK')">📌 TCP 3-Way Handshake Connection</li>
+                      <li onclick="fillAndSendAiPrompt('HTTP vs HTTPS SSL TLS Encryption')">📌 HTTP vs HTTPS Security</li>
+                      <li onclick="fillAndSendAiPrompt('NAT Network Address Translation')">📌 NAT (Network Address Translation)</li>
+                    </ul>
+                  </div>
+
+                </div>
+              </div>
+
+
+              <!-- CATEGORY 6: AUTOMATA THEORY / TOC (CS506) -->
+              <div id="qbCategoryToc" class="qb-category-pane" style="display:none;">
+                <h4 style="font-size:14px; color:#b91c1c; font-weight:800; margin-bottom:10px;"><i class="fa-solid fa-calculator"></i> Automata Theory (CS506) - Formal Languages & Turing Machines</h4>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:10px;">
+                  
+                  <div class="qb-section-box">
+                    <h5>Finite Automata & Regular Languages</h5>
+                    <ul class="qb-list">
+                      <li onclick="fillAndSendAiPrompt('DFA vs NFA finite automata')">📌 DFA vs NFA Finite Automata</li>
+                      <li onclick="fillAndSendAiPrompt('Pumping Lemma for Regular Languages')">📌 Pumping Lemma for Regular Languages</li>
+                      <li onclick="fillAndSendAiPrompt('Myhill Nerode Theorem DFA Minimization')">📌 Myhill-Nerode Theorem & DFA Minimization</li>
+                      <li onclick="fillAndSendAiPrompt('Moore Machine vs Mealy Machine')">📌 Moore Machine vs Mealy Machine</li>
+                    </ul>
+                  </div>
+
+                  <div class="qb-section-box">
+                    <h5>Context-Free Grammars & PDA</h5>
+                    <ul class="qb-list">
+                      <li onclick="fillAndSendAiPrompt('Context Free Grammar CFG Ambiguity')">📌 Context-Free Grammar (CFG) & Ambiguity</li>
+                      <li onclick="fillAndSendAiPrompt('Chomsky Normal Form CNF and GNF')">📌 Chomsky Normal Form (CNF) & GNF</li>
+                      <li onclick="fillAndSendAiPrompt('Pushdown Automata PDA design')">📌 Pushdown Automata (PDA) Architecture</li>
+                    </ul>
+                  </div>
+
+                  <div class="qb-section-box">
+                    <h5>Turing Machines & P vs NP</h5>
+                    <ul class="qb-list">
+                      <li onclick="fillAndSendAiPrompt('Turing Machine 7 tuple definition')">📌 Turing Machine 7-Tuple Definition</li>
+                      <li onclick="fillAndSendAiPrompt('Halting Problem Undecidability')">📌 Halting Problem & Undecidability Proof</li>
+                      <li onclick="fillAndSendAiPrompt('P vs NP Problem NP Complete NP Hard')">📌 P vs NP, NP-Complete & NP-Hard</li>
+                    </ul>
+                  </div>
+
+                </div>
+              </div>
+
             </div>
           </div>
 
@@ -587,14 +781,14 @@
                 <div class="chat-msg ai-msg">
                   <div class="msg-avatar" style="background:linear-gradient(135deg, #0284c7, #38bdf8);"><i class="fa-solid fa-sparkles"></i></div>
                   <div class="msg-content">
-                    <p>✨ Welcome to <strong>Google Gemini 1.5 Flash AI Tutor</strong>! Click any question from the list above or ask me ANY doubt!</p>
+                    <p>✨ Welcome to <strong>Google Gemini 1.5 Flash AI Tutor</strong>! Click any question from the Master Question Bank above or ask me ANY doubt!</p>
                   </div>
                 </div>
               </div>
 
               <!-- Chat Input Box -->
               <form id="aiChatForm" class="chat-input-bar" onsubmit="handleSendAiMessage(event)">
-                <input type="text" id="aiQuestionInput" class="form-control" placeholder="Ask Gemini ANY question or click from the Recommended List above..." required />
+                <input type="text" id="aiQuestionInput" class="form-control" placeholder="Ask Gemini ANY question or click from the Question Bank above..." required />
                 <button type="submit" class="btn-primary" id="btnSendAi" style="background:linear-gradient(135deg, #4f46e5, #0284c7);">
                   <i class="fa-solid fa-paper-plane"></i> Ask Gemini
                 </button>

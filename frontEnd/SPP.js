@@ -30,6 +30,27 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// Switch Question Bank Tabs in Gemini AI View
+function switchQbTab(subject) {
+  const tabs = ['os', 'dsa', 'se', 'dbms', 'cn', 'toc'];
+  tabs.forEach(t => {
+    const tabBtn = document.getElementById(`tabQb${capitalizeWord(t)}`);
+    const pane = document.getElementById(`qbCategory${capitalizeWord(t)}`);
+    if (t === subject) {
+      if (tabBtn) tabBtn.classList.add('active');
+      if (pane) pane.style.display = 'block';
+    } else {
+      if (tabBtn) tabBtn.classList.remove('active');
+      if (pane) pane.style.display = 'none';
+    }
+  });
+}
+
+function capitalizeWord(s) {
+  if (!s) return '';
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 // Save User Gemini API Key
 function saveUserApiKey() {
   const keyInput = document.getElementById('userApiKeyInput');
