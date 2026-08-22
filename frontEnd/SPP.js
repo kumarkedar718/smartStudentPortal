@@ -1080,6 +1080,18 @@ function fillAiPrompt(text) {
   document.getElementById('aiQuestionInput').value = text;
 }
 
+function fillAndSendAiPrompt(text) {
+  const input = document.getElementById('aiQuestionInput');
+  if (input) {
+    input.value = text;
+    const form = document.getElementById('aiChatForm');
+    if (form) {
+      const event = new Event('submit', { cancelable: true, bubbles: true });
+      form.dispatchEvent(event);
+    }
+  }
+}
+
 async function handleSendAiMessage(e) {
   e.preventDefault();
   const input = document.getElementById('aiQuestionInput');

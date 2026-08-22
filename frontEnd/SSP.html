@@ -489,6 +489,78 @@
 
         <!-- ==================== GEMINI AI OFFICIAL REST API ASSISTANT VIEW ==================== -->
         <section id="viewAi-assistant" class="portal-view">
+          
+          <!-- Master Recommended Questions List Card -->
+          <div class="dashboard-card" style="margin-bottom: 20px;">
+            <div class="card-header" style="background:linear-gradient(135deg, #0f172a, #1e293b); color:white;">
+              <h3 style="color:white;"><i class="fa-solid fa-list-check" style="color:#38bdf8;"></i> Recommended Questions List (100% Verified Answers)</h3>
+              <span class="badge badge-success">Click Any Question to Ask</span>
+            </div>
+            <div class="card-body" style="padding:15px;">
+              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+                
+                <!-- Subject 1: Data Structures -->
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:10px;">
+                  <h4 style="font-size:13px; font-weight:800; color:var(--primary); margin-bottom:8px;"><i class="fa-solid fa-tree"></i> Data Structures (CS501)</h4>
+                  <ul style="list-style:none; display:flex; flex-direction:column; gap:6px; font-size:12px;">
+                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('Class and object')">📌 Class and Object definition & C++ code</li>
+                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('What is Binary Search Tree (BST)')">📌 Binary Search Tree (BST) & Binary Search</li>
+                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('Difference between Array and Linked List')">📌 Array vs Linked List comparison</li>
+                  </ul>
+                </div>
+
+                <!-- Subject 2: Software Engineering -->
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:10px;">
+                  <h4 style="font-size:13px; font-weight:800; color:#0284c7; margin-bottom:8px;"><i class="fa-solid fa-gears"></i> Software Engg (CS502)</h4>
+                  <ul style="list-style:none; display:flex; flex-direction:column; gap:6px; font-size:12px;">
+                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('Waterfall vs Agile SDLC model')">📌 Waterfall vs Agile SDLC model</li>
+                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('Black box vs White box testing')">📌 Black-box vs White-box software testing</li>
+                  </ul>
+                </div>
+
+                <!-- Subject 3: Operating Systems -->
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:10px;">
+                  <h4 style="font-size:13px; font-weight:800; color:#9333ea; margin-bottom:8px;"><i class="fa-solid fa-microchip"></i> Operating Systems (CS503)</h4>
+                  <ul style="list-style:none; display:flex; flex-direction:column; gap:6px; font-size:12px;">
+                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('deadlock')">📌 What is Deadlock & 4 necessary conditions</li>
+                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('semaphore')">📌 What is Semaphore & Mutex</li>
+                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('paging')">📌 What is Paging & Virtual Memory</li>
+                  </ul>
+                </div>
+
+                <!-- Subject 4: DBMS -->
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:10px;">
+                  <h4 style="font-size:13px; font-weight:800; color:#166534; margin-bottom:8px;"><i class="fa-solid fa-database"></i> DBMS & SQL (CS504)</h4>
+                  <ul style="list-style:none; display:flex; flex-direction:column; gap:6px; font-size:12px;">
+                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('3nf')">📌 What is 3NF Normalization in DBMS</li>
+                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('sql joins')">📌 SQL INNER JOIN, LEFT JOIN, RIGHT JOIN</li>
+                  </ul>
+                </div>
+
+                <!-- Subject 5: Networks -->
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:10px;">
+                  <h4 style="font-size:13px; font-weight:800; color:#c2410c; margin-bottom:8px;"><i class="fa-solid fa-network-wired"></i> Networks (CS505)</h4>
+                  <ul style="list-style:none; display:flex; flex-direction:column; gap:6px; font-size:12px;">
+                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('osi model')">📌 Explain OSI 7-Layer Reference Model</li>
+                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('tcp 3 way handshake')">📌 What is TCP 3-Way Handshake</li>
+                  </ul>
+                </div>
+
+                <!-- Subject 6: Automata & Science -->
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:10px;">
+                  <h4 style="font-size:13px; font-weight:800; color:#b91c1c; margin-bottom:8px;"><i class="fa-solid fa-flask"></i> Automata & Science</h4>
+                  <ul style="list-style:none; display:flex; flex-direction:column; gap:6px; font-size:12px;">
+                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('dfa vs nfa')">📌 DFA vs NFA in Automata Theory</li>
+                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('photosynthesis')">📌 What is Photosynthesis equation & stages</li>
+                    <li style="cursor:pointer; color:#0369a1; text-decoration:underline;" onclick="fillAndSendAiPrompt('what is computer')">📌 What is Computer architecture & IPO cycle</li>
+                  </ul>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Chat Window Card -->
           <div class="dashboard-card">
             <div class="card-header" style="background: linear-gradient(135deg, #1e1b4b, #4338ca); color:white;">
               <h3 style="color:white;"><i class="fa-solid fa-sparkles" style="color:#38bdf8;"></i> Official Google Gemini 1.5 Flash AI Assistant</h3>
@@ -510,30 +582,19 @@
 
             <div class="card-body" style="padding: 20px;">
               
-              <!-- Gemini Mobile App Prompt Suggestions Chips -->
-              <div class="prompt-chips">
-                <span class="chip-title"><i class="fa-solid fa-compass"></i> Ask Gemini Anything:</span>
-                <button type="button" class="chip-btn" onclick="fillAiPrompt('Explain Binary Search Tree insertion and deletion with C++ code')">🌲 Data Structures (CS501)</button>
-                <button type="button" class="chip-btn" onclick="fillAiPrompt('What is Agile vs Waterfall SDLC model in Software Engineering?')">⚙️ Software Engg (CS502)</button>
-                <button type="button" class="chip-btn" onclick="fillAiPrompt('Explain Deadlock conditions and Banker Algorithm in OS')">💻 Operating Systems (CS503)</button>
-                <button type="button" class="chip-btn" onclick="fillAiPrompt('Explain 3NF Normalization and SQL Joins with examples')">🗄️ DBMS & SQL (CS504)</button>
-                <button type="button" class="chip-btn" onclick="fillAiPrompt('Explain OSI 7 Layer Model and TCP 3-Way Handshake')">🌐 Computer Networks (CS505)</button>
-                <button type="button" class="chip-btn" onclick="fillAiPrompt('What is Deterministic Finite Automata (DFA)?')">🔢 Automata Theory (CS506)</button>
-              </div>
-
               <!-- Chat Message Window -->
               <div id="chatMessagesWindow" class="chat-messages-box">
                 <div class="chat-msg ai-msg">
                   <div class="msg-avatar" style="background:linear-gradient(135deg, #0284c7, #38bdf8);"><i class="fa-solid fa-sparkles"></i></div>
                   <div class="msg-content">
-                    <p>✨ Welcome to <strong>Google Gemini 1.5 Flash AI Tutor</strong>! Ask me ANY question on Data Structures, Software Engineering, Operating Systems, DBMS, Computer Networks, Automata, or any general topic!</p>
+                    <p>✨ Welcome to <strong>Google Gemini 1.5 Flash AI Tutor</strong>! Click any question from the list above or ask me ANY doubt!</p>
                   </div>
                 </div>
               </div>
 
               <!-- Chat Input Box -->
               <form id="aiChatForm" class="chat-input-bar" onsubmit="handleSendAiMessage(event)">
-                <input type="text" id="aiQuestionInput" class="form-control" placeholder="Ask Gemini ANY question (e.g. Explain 3NF, Write C++ code, OSI layers)..." required />
+                <input type="text" id="aiQuestionInput" class="form-control" placeholder="Ask Gemini ANY question or click from the Recommended List above..." required />
                 <button type="submit" class="btn-primary" id="btnSendAi" style="background:linear-gradient(135deg, #4f46e5, #0284c7);">
                   <i class="fa-solid fa-paper-plane"></i> Ask Gemini
                 </button>
