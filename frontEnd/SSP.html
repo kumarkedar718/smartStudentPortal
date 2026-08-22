@@ -540,70 +540,76 @@
   </button>
 
 
-  <!-- ==================== MODALS ==================== -->
+  <!-- ==================== MODALS WITH EASY CLOSE OPTIONS ==================== -->
   
+  <!-- Enrolled Subjects Detail Modal -->
+  <div id="enrolledSubjectsModal" class="modal-overlay" style="display: none;" onclick="closeModalOnOverlayClick(event, 'enrolledSubjectsModal')">
+    <div class="modal-card" style="max-width: 650px;">
+      <div class="modal-header" style="background:var(--primary-light);">
+        <div>
+          <h3 style="color:var(--primary); font-weight:800;"><i class="fa-solid fa-book-bookmark"></i> Enrolled Courses & Faculty Directory</h3>
+          <p style="font-size:12px; color:var(--text-muted);">Gandhi Institute for Education & Tech • CSE Sem 5</p>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal('enrolledSubjectsModal')" title="Close Window">&times;</button>
+      </div>
+      <div class="modal-body" id="enrolledSubjectsBody">
+        <!-- Rendered dynamically -->
+      </div>
+      <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:12px; color:var(--text-muted);"><i class="fa-solid fa-circle-info"></i> Click outside window or button to close</span>
+        <button class="btn-secondary" style="background:#e2e8f0; font-weight:700;" onclick="closeModal('enrolledSubjectsModal')">
+          <i class="fa-solid fa-xmark"></i> Close Window
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Study Note Full Reader Modal -->
-  <div id="readNoteModal" class="modal-overlay" style="display: none;">
+  <div id="readNoteModal" class="modal-overlay" style="display: none;" onclick="closeModalOnOverlayClick(event, 'readNoteModal')">
     <div class="modal-card" style="max-width: 750px;">
       <div class="modal-header" style="background:var(--primary-light);">
         <div>
           <h3 id="noteModalTitle" style="color:var(--primary);">Study Handbook</h3>
           <p id="noteModalSub" style="font-size:12px; color:var(--text-muted);"></p>
         </div>
-        <button class="modal-close" onclick="closeModal('readNoteModal')">&times;</button>
+        <button class="modal-close-btn" onclick="closeModal('readNoteModal')" title="Close Window">&times;</button>
       </div>
       <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
         <div id="noteModalBodyContent" class="note-reader-content"></div>
       </div>
       <div class="modal-footer">
-        <button class="btn-secondary" onclick="closeModal('readNoteModal')">Close Reader</button>
+        <button class="btn-secondary" onclick="closeModal('readNoteModal')"><i class="fa-solid fa-xmark"></i> Close Reader</button>
         <button class="btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print / Save PDF</button>
       </div>
     </div>
   </div>
 
   <!-- Official Fee Receipt Modal -->
-  <div id="feeReceiptModal" class="modal-overlay" style="display: none;">
+  <div id="feeReceiptModal" class="modal-overlay" style="display: none;" onclick="closeModalOnOverlayClick(event, 'feeReceiptModal')">
     <div class="modal-card" style="max-width: 600px;">
       <div class="modal-header">
         <div>
           <h3 style="font-size:16px;">Gandhi Institute for Education and Technology</h3>
           <p style="font-size:12px; color:var(--text-muted);">Official Fee Payment Receipt</p>
         </div>
-        <button class="modal-close" onclick="closeModal('feeReceiptModal')">&times;</button>
+        <button class="modal-close-btn" onclick="closeModal('feeReceiptModal')" title="Close Window">&times;</button>
       </div>
       <div class="modal-body" id="feeReceiptBody">
         <!-- Rendered dynamically -->
       </div>
       <div class="modal-footer">
-        <button class="btn-secondary" onclick="closeModal('feeReceiptModal')">Close</button>
+        <button class="btn-secondary" onclick="closeModal('feeReceiptModal')"><i class="fa-solid fa-xmark"></i> Close</button>
         <button class="btn-primary" onclick="window.print()"><i class="fa-solid fa-download"></i> Print / Download Receipt</button>
       </div>
     </div>
   </div>
 
-  <!-- Enrolled Subjects Detail Modal -->
-  <div id="enrolledSubjectsModal" class="modal-overlay" style="display: none;">
-    <div class="modal-card" style="max-width: 650px;">
-      <div class="modal-header">
-        <h3>Enrolled Courses & Faculty Directory</h3>
-        <button class="modal-close" onclick="closeModal('enrolledSubjectsModal')">&times;</button>
-      </div>
-      <div class="modal-body" id="enrolledSubjectsBody">
-        <!-- Rendered dynamically -->
-      </div>
-      <div class="modal-footer">
-        <button class="btn-secondary" onclick="closeModal('enrolledSubjectsModal')">Close</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Submit Assignment Modal (Student) -->
-  <div id="submitAssignmentModal" class="modal-overlay" style="display: none;">
+  <div id="submitAssignmentModal" class="modal-overlay" style="display: none;" onclick="closeModalOnOverlayClick(event, 'submitAssignmentModal')">
     <div class="modal-card">
       <div class="modal-header">
         <h3 id="modalAssignTitle">Submit Assignment Solution</h3>
-        <button class="modal-close" onclick="closeModal('submitAssignmentModal')">&times;</button>
+        <button class="modal-close-btn" onclick="closeModal('submitAssignmentModal')">&times;</button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="submitAssignId" />
@@ -620,11 +626,11 @@
   </div>
 
   <!-- Create Assignment Modal (Teacher) -->
-  <div id="createAssignmentModal" class="modal-overlay" style="display: none;">
+  <div id="createAssignmentModal" class="modal-overlay" style="display: none;" onclick="closeModalOnOverlayClick(event, 'createAssignmentModal')">
     <div class="modal-card">
       <div class="modal-header">
         <h3>Post New Assignment</h3>
-        <button class="modal-close" onclick="closeModal('createAssignmentModal')">&times;</button>
+        <button class="modal-close-btn" onclick="closeModal('createAssignmentModal')">&times;</button>
       </div>
       <div class="modal-body">
         <div class="form-group">
@@ -658,11 +664,11 @@
   </div>
 
   <!-- Grade Submission Modal (Teacher) -->
-  <div id="gradeSubmissionModal" class="modal-overlay" style="display: none;">
+  <div id="gradeSubmissionModal" class="modal-overlay" style="display: none;" onclick="closeModalOnOverlayClick(event, 'gradeSubmissionModal')">
     <div class="modal-card">
       <div class="modal-header">
         <h3>Grade Student Submission</h3>
-        <button class="modal-close" onclick="closeModal('gradeSubmissionModal')">&times;</button>
+        <button class="modal-close-btn" onclick="closeModal('gradeSubmissionModal')">&times;</button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="gradeSubmissionId" />

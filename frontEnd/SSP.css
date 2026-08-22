@@ -870,15 +870,15 @@ body {
 }
 
 
-/* MODALS */
+/* MODALS WITH CLEAR CLOSE BUTTONS */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -890,10 +890,11 @@ body {
 .modal-card {
   background: var(--surface);
   width: 100%;
-  max-width: 520px;
+  max-width: 550px;
   border-radius: 20px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .modal-header {
@@ -909,12 +910,27 @@ body {
   font-weight: 700;
 }
 
-.modal-close {
-  background: transparent;
-  border: none;
-  font-size: 24px;
-  color: var(--text-muted);
+.modal-close-btn {
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  color: var(--danger);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  transition: var(--transition);
+  line-height: 1;
+}
+
+.modal-close-btn:hover {
+  background: var(--danger);
+  color: white;
+  transform: scale(1.1);
 }
 
 .modal-body {

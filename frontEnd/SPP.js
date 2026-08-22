@@ -518,7 +518,6 @@ async function loadAttendanceData() {
       const res = await fetch(`${API_BASE}/student/attendance/${currentUser.studentId || 1}`);
       const result = await res.json();
 
-      // Initialize Interactive 3D Chart Visualizations
       if (result.summary && result.summary.length > 0) {
         renderAttendanceCharts(result.summary);
 
@@ -613,7 +612,6 @@ function renderAttendanceCharts(summaryData) {
     barColors.push(pct >= 75 ? '#10b981' : '#ef4444');
   });
 
-  // 1. Interactive 3D Doughnut Gauge Chart
   const doughnutCtx = document.getElementById('attendanceDoughnutChart');
   if (doughnutCtx) {
     if (doughnutChartInstance) doughnutChartInstance.destroy();
@@ -641,7 +639,6 @@ function renderAttendanceCharts(summaryData) {
     });
   }
 
-  // 2. Interactive 3D Bar Chart for Subject-wise Comparison
   const barCtx = document.getElementById('attendanceBarChart');
   if (barCtx) {
     if (barChartInstance) barChartInstance.destroy();
@@ -1141,10 +1138,17 @@ function formatMarkdownSimple(text) {
 }
 
 
-/* ==================== MODAL HANDLERS ==================== */
+/* ==================== MODAL HANDLERS & OVERLAY CLICK ==================== */
 
 function closeModal(id) {
-  document.getElementById(id).style.display = 'none';
+  const modal = document.getElementById(id);
+  if (modal) modal.style.display = 'none';
+}
+
+function closeModalOnOverlayClick(event, modalId) {
+  if (event.target.id === modalId) {
+    closeModal(modalId);
+  }
 }
 
 // Student Submit Assignment Modal
