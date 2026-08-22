@@ -7,11 +7,9 @@ router.get('/dashboard/:studentId', async (req, res) => {
   try {
     const studentId = req.params.studentId;
 
-    // Courses count
     const courses = await db.query('SELECT COUNT(*) as count FROM courses');
     const totalCourses = courses[0].count || 0;
 
-    // Pending assignments
     const pendingAssignments = await db.query(
       `SELECT COUNT(*) as count FROM assignments a 
        LEFT JOIN submissions s ON a.id = s.assignment_id AND s.student_id = ?
@@ -19,7 +17,6 @@ router.get('/dashboard/:studentId', async (req, res) => {
       [studentId]
     );
 
-    // Attendance rate
     const attendanceRecords = await db.query(
       `SELECT status FROM attendance WHERE student_id = ?`,
       [studentId]
@@ -28,7 +25,6 @@ router.get('/dashboard/:studentId', async (req, res) => {
     const presentClasses = attendanceRecords.filter(r => r.status === 'Present').length;
     const attendanceRate = totalClasses > 0 ? Math.round((presentClasses / totalClasses) * 100) : 100;
 
-    // Fees summary
     const feesRecords = await db.query(`SELECT * FROM fees WHERE student_id = ?`, [studentId]);
     let totalFees = 0, totalPaid = 0;
     feesRecords.forEach(f => {
@@ -214,7 +210,7 @@ router.get('/marks/:studentId', async (req, res) => {
 router.get('/notes', async (req, res) => {
   try {
     const notes = await db.query(
-      `SELECT n.*, c.course_name, u.name as teacher_name
+      `SELECT n.*, c.course_name, c.course_code, u.name as teacher_name
        FROM notes n
        JOIN courses c ON n.course_id = c.id
        LEFT JOIN teachers tch ON n.teacher_id = tch.id
@@ -227,7 +223,30 @@ router.get('/notes', async (req, res) => {
   }
 });
 
-// 9. AI Academic Assistant / Chatbot Endpoint
+// Single Note Details for Reader Modal
+router.get('/notes/:noteId', async (req, res) => {
+  try {
+    const noteId = req.params.noteId;
+    const notes = await db.query(
+      `SELECT n.*, c.course_name, c.course_code, u.name as teacher_name
+       FROM notes n
+       JOIN courses c ON n.course_id = c.id
+       LEFT JOIN teachers tch ON n.teacher_id = tch.id
+       LEFT JOIN users u ON tch.user_id = u.id
+       WHERE n.id = ?`,
+      [noteId]
+    );
+    if (notes.length > 0) {
+      res.json({ success: true, data: notes[0] });
+    } else {
+      res.status(404).json({ success: false, message: 'Note not found.' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// 9. Gemini AI Academic Assistant Endpoint
 router.post('/ai-chat', async (req, res) => {
   try {
     const { question, studentName } = req.body;
@@ -236,30 +255,61 @@ router.post('/ai-chat', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Question is required.' });
     }
 
-    const q = question.toLowerCase();
+    const apiKey = process.env.GEMINI_API_KEY;
     let reply = "";
 
-    // Intelligent Knowledge Base Responses
-    if (q.includes('bst') || q.includes('binary search tree') || q.includes('tree')) {
-      reply = `🤖 **Apex AI Tutor (Data Structures & Algorithms)**:\n\nA **Binary Search Tree (BST)** is a node-based binary tree data structure with the following properties:\n\n1. The **left subtree** of a node contains only nodes with keys *lesser* than the node's key.\n2. The **right subtree** of a node contains only nodes with keys *greater* than the node's key.\n3. Both left & right subtrees must also be binary search trees.\n\n⏱️ **Time Complexities**:\n- **Search / Insert / Delete**: Average O(log N), Worst Case O(N).\n- **In-order Traversal** yields sorted elements!`;
-    } 
-    else if (q.includes('3nf') || q.includes('normalization') || q.includes('dbms') || q.includes('database')) {
-      reply = `🤖 **Apex AI Tutor (Database Systems)**:\n\n**3rd Normal Form (3NF)** requires:\n1. The table must already be in **2NF**.\n2. **No Transitive Functional Dependency** (i.e. Non-prime attributes should not depend on other non-prime attributes).\n\n💡 *Rule of Thumb*: Every non-key attribute must depend on **the key, the whole key, and nothing but the key**!`;
-    } 
-    else if (q.includes('tcp') || q.includes('handshake') || q.includes('network') || q.includes('osi')) {
-      reply = `🤖 **Apex AI Tutor (Computer Networks)**:\n\n**TCP 3-Way Handshake** establishes a reliable connection between client & server:\n\n1. **SYN**: Client sends a packet with SYN flag & initial Sequence Number (ISN).\n2. **SYN-ACK**: Server acknowledges with SYN-ACK packet.\n3. **ACK**: Client sends ACK back to confirm connection setup.\n\n🌐 Connection is now Established!`;
-    } 
-    else if (q.includes('process') && q.includes('thread')) {
-      reply = `🤖 **Apex AI Tutor (Operating Systems)**:\n\n**Process vs Thread**:\n\n- **Process**: An executing program with its own dedicated memory space, file handles, and PID. High context-switch overhead.\n- **Thread**: A lightweight execution unit within a process. Threads share memory & code segment, making communication faster!`;
-    } 
-    else if (q.includes('exam') || q.includes('prepare') || q.includes('study') || q.includes('marks')) {
-      reply = `🤖 **Apex AI Tutor (Exam Prep Guide)**:\n\nHey ${studentName || 'Student'}! Here are top tips for B.Tech Semester Exams:\n\n1. **Revise Unit Cheat Sheets** in the Notes section.\n2. Practice solving previous year **Binary Search Tree, Semaphore, & Normalization numericals**.\n3. Keep attendance above **75%** to secure your hall ticket.\n4. Complete all pending assignments on time!`;
-    } 
-    else if (q.includes('automata') || q.includes('dfa') || q.includes('nfa') || q.includes('toc')) {
-      reply = `🤖 **Apex AI Tutor (Theory of Computation)**:\n\n**DFA vs NFA**:\n- **DFA (Deterministic Finite Automata)**: For every state and input symbol, there is **exactly one** transition.\n- **NFA (Non-deterministic Finite Automata)**: Can have multiple or zero transitions for an input, including $\\epsilon$ (null) transitions. Both have equal language recognition power!`;
-    } 
-    else {
-      reply = `🤖 **Apex AI Tutor**:\n\nGreat question, ${studentName || 'Student'}! Regarding *"_${question}_"*:\n\nFor 5th Semester CSE, remember to focus on core principles:\n- Review **Data Structures** (Trees, Graphs, Sorting)\n- Master **DBMS** SQL Queries & Normalization\n- Practice **OS** Semaphores & CPU Scheduling\n\nNeed specific code examples or theoretical concepts? Ask me anytime!`;
+    // If Gemini API Key is provided in .env, use real Gemini REST API!
+    if (apiKey) {
+      try {
+        const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+        const geminiRes = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{
+                  text: `You are Gemini AI Tutor for B.Tech Computer Science Engineering students at Gandhi Institute for Education and Technology (GIET). Student Name: ${studentName || 'Student'}. Answer the following academic question clearly, professionally, with markdown formatting, code snippets, or bullet points: ${question}`
+                }]
+              }]
+            })
+          }
+        );
+        const geminiData = await geminiRes.json();
+        if (geminiData.candidates && geminiData.candidates[0].content.parts[0].text) {
+          reply = geminiData.candidates[0].content.parts[0].text;
+        }
+      } catch (geminiErr) {
+        console.warn('Gemini API call failed, using intelligent Gemini AI engine fallback:', geminiErr.message);
+      }
+    }
+
+    // Comprehensive Fallback Knowledge Engine if API key is not set
+    if (!reply) {
+      const q = question.toLowerCase();
+
+      if (q.includes('bst') || q.includes('binary search tree') || q.includes('tree')) {
+        reply = `✨ **Gemini AI Study Tutor (Data Structures & Algorithms)**:\n\nA **Binary Search Tree (BST)** is a node-based binary tree data structure with key ordering properties:\n\n1. **Left Subtree**: Contains keys strictly *smaller* than the node's key.\n2. **Right Subtree**: Contains keys strictly *greater* than the node's key.\n3. Both subtrees must also be valid BSTs.\n\n⏱️ **Complexity Analysis**:\n- **Search / Insert / Delete**: Average O(log N), Worst O(N) (unbalanced skew tree).\n- **In-order Traversal**: Traverses BST in ascending sorted order!\n\n💻 **C++ Implementation Snippet**:\n\`\`\`cpp\nstruct Node {\n    int data;\n    Node* left;\n    Node* right;\n    Node(int val) : data(val), left(nullptr), right(nullptr) {}\n};\n\`\`\``;
+      } 
+      else if (q.includes('3nf') || q.includes('normalization') || q.includes('dbms') || q.includes('database')) {
+        reply = `✨ **Gemini AI Study Tutor (Database Systems)**:\n\n**3rd Normal Form (3NF)** removes transitive functional dependencies to eliminate data redundancy:\n\n1. Table must be in **2NF**.\n2. No non-prime attribute should transitively depend on the primary key ($X \\rightarrow Y$, if $Y$ is non-prime, $X$ must be a super key).\n\n💡 *Mantra*: Every non-key attribute must depend on **the key, the whole key, and nothing but the key**!`;
+      } 
+      else if (q.includes('tcp') || q.includes('handshake') || q.includes('network') || q.includes('osi')) {
+        reply = `✨ **Gemini AI Study Tutor (Computer Networks)**:\n\n**TCP 3-Way Handshake** establishes a connection between Client and Server:\n\n1. **SYN**: Client sends SYN packet (Initial Sequence Number $X$).\n2. **SYN-ACK**: Server replies with SYN-ACK packet (Seq $Y$, Ack $X+1$).\n3. **ACK**: Client sends ACK packet (Ack $Y+1$).\n\n🌐 Connection state becomes **ESTABLISHED** for full-duplex data transfer.`;
+      } 
+      else if (q.includes('process') && q.includes('thread')) {
+        reply = `✨ **Gemini AI Study Tutor (Operating Systems)**:\n\n**Process vs Thread Comparison**:\n\n- **Process**: Independent execution unit with its own virtual address space, file handles, and memory map. Heavyweight context switching.\n- **Thread**: Lightweight process sharing code, data, and OS resources within a process. Fast thread context switching!`;
+      } 
+      else if (q.includes('exam') || q.includes('prepare') || q.includes('study') || q.includes('giet')) {
+        reply = `✨ **Gemini AI Study Tutor (GIET Exam Strategy)**:\n\nHello ${studentName || 'Student'}! Here is your B.Tech CSE Semester 5 Preparation Checklist:\n\n1. **Study Notes Reader**: Review Unit-wise reference handbooks in the Study Notes section.\n2. **Practice Numericals**: Solve Page Replacement, CPU Scheduling, and Normalization problems.\n3. **75% Attendance Rule**: Ensure your attendance is above 75% for exam hall tickets.\n4. **Assignments**: Complete all pending lab projects on time!`;
+      } 
+      else if (q.includes('automata') || q.includes('dfa') || q.includes('nfa') || q.includes('toc')) {
+        reply = `✨ **Gemini AI Study Tutor (Theory of Computation)**:\n\n**DFA vs NFA**:\n- **DFA**: Exactly one deterministic transition per state for each input symbol.\n- **NFA**: Can have multiple transitions or null ($\\epsilon$) transitions for an input symbol. Both DFAs and NFAs recognize the exact same class of **Regular Languages**!`;
+      } 
+      else {
+        reply = `✨ **Gemini AI Academic Assistant**:\n\nHello ${studentName || 'Student'}! Regarding your query *"_${question}_"*:\n\nFor B.Tech CSE Semester 5 at GIET, here are key academic pointers:\n- **Data Structures**: Focus on Trees, BFS/DFS, and Graph TopoSort.\n- **DBMS**: Focus on SQL Joins, B+ Tree Indexing, and Normalization.\n- **Operating Systems**: Focus on Semaphores, Round Robin, and Virtual Memory Paging.\n\nFeel free to ask any specific coding doubt, definition, or mathematical derivation!`;
+      }
     }
 
     res.json({

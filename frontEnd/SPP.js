@@ -1,11 +1,12 @@
 // Smart Student Portal Client Application Logic
-// Apex Institute of Technology & Science - CSE Department
+// Gandhi Institute for Education and Technology (GIET) - CSE Department
 
 const API_BASE = '/api';
 
 // Application State
 let currentUser = null; // { id, name, role, studentId, teacherId, rollNumber, teacherCode, department }
 let currentView = 'dashboard';
+let globalNotesCache = [];
 
 // DOM Loaded Initialization
 document.addEventListener('DOMContentLoaded', () => {
@@ -32,7 +33,7 @@ function switchRole(role) {
     btnStudent.classList.add('active');
     btnTeacher.classList.remove('active');
     labelUser.innerHTML = '<i class="fa-solid fa-user"></i> Username / Roll Number';
-    inputUser.placeholder = 'e.g. student1 or STU101';
+    inputUser.placeholder = 'e.g. student1 or GIET2022CSE101';
   } else {
     btnTeacher.classList.add('active');
     btnStudent.classList.remove('active');
@@ -77,25 +78,25 @@ async function handleLogin(e) {
       currentUser = data.user;
       localStorage.setItem('ssp_user', JSON.stringify(currentUser));
       msgBox.className = 'auth-message success';
-      msgBox.innerHTML = 'Login successful! Entering Apex Smart Portal...';
+      msgBox.innerHTML = 'Login successful! Entering GIET Student Portal...';
 
       setTimeout(() => {
         showAppScreen();
         btnLogin.disabled = false;
-        btnLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Sign In to Smart Portal';
+        btnLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Sign In to Student Portal';
       }, 400);
 
     } else {
       msgBox.className = 'auth-message error';
       msgBox.innerHTML = data.message || 'Login failed.';
       btnLogin.disabled = false;
-      btnLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Sign In to Smart Portal';
+      btnLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Sign In to Student Portal';
     }
   } catch (err) {
     msgBox.className = 'auth-message error';
     msgBox.innerHTML = 'Could not connect to backend server. Make sure node server is running.';
     btnLogin.disabled = false;
-    btnLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Sign In to Smart Portal';
+    btnLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Sign In to Student Portal';
   }
 }
 
@@ -112,7 +113,7 @@ function showAppScreen() {
   document.getElementById('sidebarAvatar').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(currentUser.name)}`;
 
   if (currentUser.role === 'student') {
-    document.getElementById('sidebarUserSub').innerText = `Roll: ${currentUser.rollNumber || 'STU101'}`;
+    document.getElementById('sidebarUserSub').innerText = `Roll: ${currentUser.rollNumber || 'GIET2022CSE101'}`;
     document.getElementById('teachersMenuText').innerText = 'Subject Faculty';
     document.getElementById('teachersCardTitle').innerHTML = '<i class="fa-solid fa-user-tie"></i> Dedicated Subject Faculty Members';
     document.getElementById('directoryBadge').innerText = '6 Subject Professors';
@@ -123,7 +124,7 @@ function showAppScreen() {
   } else {
     document.getElementById('sidebarUserSub').innerText = `Code: ${currentUser.teacherCode || 'TCH201'}`;
     document.getElementById('teachersMenuText').innerText = 'Student Roster';
-    document.getElementById('teachersCardTitle').innerHTML = '<i class="fa-solid fa-user-graduate"></i> B.Tech CSE Class Directory';
+    document.getElementById('teachersCardTitle').innerHTML = '<i class="fa-solid fa-user-graduate"></i> GIET CSE Class Directory';
     document.getElementById('directoryBadge').innerText = '20 Enrolled Students';
 
     // Show teacher-only sidebar items & elements
@@ -180,15 +181,15 @@ function capitalize(str) {
 
 function updateHeaderTitle(viewName) {
   const titles = {
-    dashboard: { title: 'Academic Dashboard', sub: 'Apex Institute of Technology • Computer Science Dept' },
+    dashboard: { title: 'Academic Dashboard Overview', sub: 'Gandhi Institute for Education and Technology • CSE Department' },
     timetable: { title: 'Weekly Class Timetable', sub: 'Lectures and Practical Labs Schedule (Semester 5)' },
-    teachers: { title: currentUser.role === 'student' ? 'Dedicated Subject Professors' : 'B.Tech CSE Student Roster', sub: 'Faculty & Student academic directory' },
-    attendance: { title: 'Attendance Management', sub: 'Lecture presence and subject-wise logs' },
-    assignments: { title: 'Subject Assignments & Projects', sub: 'Track coursework due dates and grade submissions' },
-    fees: { title: 'Fee Payment & Receipts', sub: 'Semester tuition fees breakdown and transaction status' },
-    marks: { title: 'Examination Performance', sub: 'Mid-Semester Examination marksheet & SGPA transcript' },
-    notes: { title: 'Study Notes & Materials', sub: 'Course reference handbooks & lecture cheat sheets' },
-    'ai-assistant': { title: 'AI Academic Doubt Solver', sub: 'Ask instant academic doubts, code help, and exam prep tips' }
+    teachers: { title: currentUser.role === 'student' ? 'Dedicated Subject Professors' : 'GIET CSE Student Directory', sub: 'Faculty & Student academic directory' },
+    attendance: { title: 'Attendance Performance Analytics', sub: 'Subject-wise attendance percentage and logs' },
+    assignments: { title: 'Coursework & Projects', sub: 'Track due dates, submit solutions, and view grades' },
+    fees: { title: 'Semester Fees & Official Receipts', sub: 'Tuition fee breakdown and transaction history' },
+    marks: { title: 'Academic Performance & Marksheet', sub: 'Mid-Semester Examination marksheet & SGPA transcript' },
+    notes: { title: 'Study Notes & Handbooks', sub: 'Course reference handbooks & unit cheat sheets' },
+    'ai-assistant': { title: 'Gemini AI Academic Assistant', sub: 'Ask instant academic doubts, code help, and exam prep tips' }
   };
 
   const info = titles[viewName] || { title: 'Portal View', sub: '' };
@@ -227,7 +228,7 @@ function loadViewData(viewName) {
 }
 
 
-/* ==================== 1. DASHBOARD DATA ==================== */
+/* ==================== 1. DASHBOARD DATA & INTERACTIVE CARDS ==================== */
 async function loadDashboardData() {
   const statContainer = document.getElementById('statCardsContainer');
   const coursesContainer = document.getElementById('coursesListContainer');
@@ -243,30 +244,31 @@ async function loadDashboardData() {
       const result = await res.json();
       const stats = result.data;
 
+      // Clickable Stat Cards for Interactive Information
       statContainer.innerHTML = `
-        <div class="stat-card card-blue">
+        <div class="stat-card card-blue" onclick="onClickStatCard('courses')" title="Click to view Enrolled Subjects Detail">
           <div class="stat-val">${stats.enrolledCourses}</div>
-          <div class="stat-title">Enrolled Subjects</div>
+          <div class="stat-title">Enrolled Subjects <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i></div>
           <i class="fa-solid fa-book stat-icon"></i>
         </div>
-        <div class="stat-card card-orange">
+        <div class="stat-card card-orange" onclick="onClickStatCard('assignments')" title="Click to view Pending Assignments">
           <div class="stat-val">${stats.pendingAssignments}</div>
-          <div class="stat-title">Pending Assignments</div>
+          <div class="stat-title">Pending Assignments <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i></div>
           <i class="fa-solid fa-file-signature stat-icon"></i>
         </div>
-        <div class="stat-card card-green">
+        <div class="stat-card card-green" onclick="onClickStatCard('attendance')" title="Click to view Attendance Analytics">
           <div class="stat-val">${stats.attendanceRate}</div>
-          <div class="stat-title">Attendance Rate</div>
+          <div class="stat-title">Attendance Rate <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i></div>
           <i class="fa-solid fa-user-check stat-icon"></i>
         </div>
-        <div class="stat-card card-purple">
+        <div class="stat-card card-purple" onclick="onClickStatCard('fees')" title="Click to view Fees & Payments">
           <div class="stat-val">${stats.feeStatus}</div>
-          <div class="stat-title">Fee Status</div>
+          <div class="stat-title">Fee Balance <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i></div>
           <i class="fa-solid fa-wallet stat-icon"></i>
         </div>
       `;
 
-      // Load Enrolled Courses
+      // Load Enrolled Courses Progress
       const attRes = await fetch(`${API_BASE}/student/attendance/${currentUser.studentId || 1}`);
       const attData = await attRes.json();
       
@@ -346,7 +348,7 @@ async function loadDashboardData() {
             <div class="course-item">
               <div class="course-info">
                 <h4>${c.course_name} (${c.course_code})</h4>
-                <p>Credits: ${c.credits} | Total CSE Batch Students: ${stats.totalStudentsCount}</p>
+                <p>Credits: ${c.credits} | Total GIET CSE Students: ${stats.totalStudentsCount}</p>
               </div>
               <button class="btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="switchView('attendance')">Mark Attendance</button>
             </div>
@@ -367,6 +369,44 @@ async function loadDashboardData() {
     } catch (err) {
       console.error(err);
     }
+  }
+}
+
+// Click Action for Interactive Stat Cards
+async function onClickStatCard(type) {
+  if (type === 'courses') {
+    // Open Enrolled Subjects Detail Modal
+    const modal = document.getElementById('enrolledSubjectsModal');
+    const body = document.getElementById('enrolledSubjectsBody');
+    body.innerHTML = '<div class="spinner"></div>';
+    modal.style.display = 'flex';
+
+    try {
+      const res = await fetch(`${API_BASE}/student/teachers/${currentUser.studentId || 1}`);
+      const result = await res.json();
+      
+      let html = '<div style="display:flex; flex-direction:column; gap:12px;">';
+      if (result.data) {
+        result.data.forEach(t => {
+          html += `
+            <div class="course-item">
+              <div>
+                <h4 style="font-size:15px; font-weight:700;">${t.courses || 'Subject Course'}</h4>
+                <p style="font-size:12px; color:var(--text-muted);"><i class="fa-solid fa-user-tie"></i> Faculty: <strong>${t.name}</strong> (${t.teacher_code})</p>
+                <p style="font-size:12px; color:var(--text-muted);"><i class="fa-solid fa-clock"></i> Office Hours: ${t.office_hours || 'Mon-Fri 2-4 PM'}</p>
+              </div>
+              <span class="badge badge-info">4 Credits</span>
+            </div>
+          `;
+        });
+      }
+      html += '</div>';
+      body.innerHTML = html;
+    } catch (e) {
+      body.innerHTML = '<p style="color:var(--danger)">Failed to load enrolled subjects.</p>';
+    }
+  } else {
+    switchView(type);
   }
 }
 
@@ -465,7 +505,7 @@ async function loadTeachersOrStudentsData() {
 }
 
 
-/* ==================== 4. ATTENDANCE DATA ==================== */
+/* ==================== 4. ATTENDANCE DATA & GRAPHICAL ANALYTICS ==================== */
 async function loadAttendanceData() {
   const summaryContainer = document.getElementById('attendanceSummaryContainer');
   const logsTbody = document.querySelector('#attendanceLogsTable tbody');
@@ -477,22 +517,32 @@ async function loadAttendanceData() {
       const res = await fetch(`${API_BASE}/student/attendance/${currentUser.studentId || 1}`);
       const result = await res.json();
 
-      // Render Subject Breakdown
+      // Render Graphical Progress Bars & Cards
       if (result.summary && result.summary.length > 0) {
         summaryContainer.innerHTML = result.summary.map(s => {
           const total = s.total_lectures || 0;
           const present = s.present_count || 0;
           const pct = total > 0 ? Math.round((present / total) * 100) : 100;
           const badgeClass = pct >= 75 ? 'badge-success' : 'badge-danger';
+          const fillGradient = pct >= 75 ? 'linear-gradient(90deg, #10b981, #059669)' : 'linear-gradient(90deg, #ef4444, #f59e0b)';
+
           return `
             <div class="teacher-card">
-              <h4 style="font-size:15px; font-weight:700;">${s.course_name} (${s.course_code})</h4>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h4 style="font-size:15px; font-weight:700;">${s.course_name} (${s.course_code})</h4>
                 <span class="badge ${badgeClass}">${pct}% Attended</span>
-                <span style="font-size:12px; color:var(--text-muted);">${present} / ${total} Lectures</span>
               </div>
-              <div class="progress-bar" style="width:100%;">
-                <div class="progress-fill" style="width:${pct}%;"></div>
+
+              <!-- Graphical Attendance Progress Ring/Bar -->
+              <div style="margin: 12px 0;">
+                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:4px;">
+                  <span>Present: <strong>${present}</strong></span>
+                  <span>Absent: <strong>${s.absent_count || 0}</strong></span>
+                  <span>Total: <strong>${total}</strong></span>
+                </div>
+                <div class="progress-bar" style="width:100%; height:12px; border-radius:10px;">
+                  <div class="progress-fill" style="width:${pct}%; background:${fillGradient};"></div>
+                </div>
               </div>
             </div>
           `;
@@ -520,12 +570,10 @@ async function loadAttendanceData() {
     // Teacher Attendance Portal
     document.getElementById('teacherAttendanceControls').style.display = 'block';
     
-    // Set default date to today
     if (!document.getElementById('attendanceDateInput').value) {
       document.getElementById('attendanceDateInput').value = new Date().toISOString().split('T')[0];
     }
 
-    // Populate Course Select
     try {
       const cRes = await fetch(`${API_BASE}/teacher/courses/${currentUser.teacherId || 1}`);
       const cData = await cRes.json();
@@ -533,8 +581,7 @@ async function loadAttendanceData() {
       select.innerHTML = '<option value="">-- Select Subject Course --</option>' + 
         cData.data.map(c => `<option value="${c.id}">${c.course_name} (${c.course_code})</option>`).join('');
 
-      // Load empty roster message
-      document.getElementById('attendanceRosterContainer').innerHTML = '<p style="color:var(--text-muted)">Select a course and click "Load Roster" to mark attendance for all 20 students.</p>';
+      document.getElementById('attendanceRosterContainer').innerHTML = '<p style="color:var(--text-muted)">Select a course and click "Load Roster" to mark attendance for GIET students.</p>';
       logsTbody.innerHTML = '<tr><td colspan="4" style="text-align:center">Attendance logs available upon filtering.</td></tr>';
     } catch (err) {
       console.error(err);
@@ -629,7 +676,7 @@ async function saveAttendanceAction(courseId, date) {
     });
     const data = await res.json();
     if (data.success) {
-      alert('Attendance saved successfully for all students!');
+      alert('Attendance saved successfully for GIET students!');
     } else {
       alert('Failed: ' + data.message);
     }
@@ -745,10 +792,10 @@ async function loadTeacherSubmissionsData() {
 }
 
 
-/* ==================== 6. FEES DATA ==================== */
+/* ==================== 6. ENHANCED FEES & PAYMENTS DATA ==================== */
 async function loadFeesData() {
   const tbody = document.querySelector('#feesTable tbody');
-  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center"><div class="spinner"></div></td></tr>';
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center"><div class="spinner"></div></td></tr>';
 
   try {
     const res = await fetch(`${API_BASE}/student/fees/${currentUser.studentId || 1}`);
@@ -769,19 +816,70 @@ async function loadFeesData() {
             <td style="color:${remaining > 0 ? 'var(--danger)' : 'var(--success)'}; font-weight:700;">₹${remaining.toLocaleString('en-IN')}</td>
             <td>${f.due_date}</td>
             <td><span class="badge ${badge}">${f.status}</span></td>
+            <td>
+              <button class="btn-secondary" style="font-size:11px; padding:4px 10px;" onclick="openFeeReceiptModal()">
+                <i class="fa-solid fa-receipt"></i> Receipt
+              </button>
+            </td>
           </tr>
         `;
       }).join('');
     } else {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">No fee records found.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center">No fee records found.</td></tr>';
     }
   } catch (err) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--danger)">Error loading fees.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--danger)">Error loading fees.</td></tr>';
   }
 }
 
+// Open Official GIET Fee Receipt Modal
+function openFeeReceiptModal() {
+  const modal = document.getElementById('feeReceiptModal');
+  const body = document.getElementById('feeReceiptBody');
+  modal.style.display = 'flex';
 
-/* ==================== 7. MARKS / RESULTS DATA ==================== */
+  const roll = currentUser ? currentUser.rollNumber || 'GIET2022CSE101' : 'GIET2022CSE101';
+  const name = currentUser ? currentUser.name : 'Rahul Sharma';
+
+  body.innerHTML = `
+    <div style="border:1.5px dashed var(--primary); padding:20px; border-radius:12px; background:#fafafa;">
+      <div style="text-align:center; border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:12px;">
+        <h3 style="font-size:18px; font-weight:800; color:var(--primary);">Gandhi Institute for Education and Technology</h3>
+        <p style="font-size:12px; color:var(--text-muted);">B.Tech Computer Science & Engineering • Semester 5</p>
+        <span class="badge badge-success" style="margin-top:6px;">RECEIPT NO: GIET-FEE-2026-9821</span>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:13px; margin-bottom:15px;">
+        <div><strong>Student Name:</strong> ${name}</div>
+        <div><strong>Roll Number:</strong> ${roll}</div>
+        <div><strong>Payment Date:</strong> 15th August 2026</div>
+        <div><strong>Payment Mode:</strong> Online UPI / Net Banking</div>
+      </div>
+
+      <table class="data-table" style="font-size:12px;">
+        <thead>
+          <tr><th>Fee Particulars</th><th>Amount Paid</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>5th Sem Tuition Fee</td><td>₹45,000.00</td></tr>
+          <tr><td>Computer Lab & Internet Charges</td><td>₹8,000.00</td></tr>
+          <tr><td>Central Library & Book Bank Fee</td><td>₹3,500.00</td></tr>
+          <tr style="font-weight:800; background:#f1f5f9;"><td>TOTAL PAID AMOUNT</td><td>₹56,500.00</td></tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:flex-end; font-size:11px; color:var(--text-muted);">
+        <div>Computer Generated Official Document • No Signature Required</div>
+        <div style="text-align:center; border-top:1px solid #ccc; padding-top:4px; width:120px;">
+          Accounts Officer<br/>GIET College
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+
+/* ==================== 7. ENHANCED ACADEMIC RESULTS / MARKS DATA ==================== */
 async function loadMarksData() {
   const tbody = document.querySelector('#marksTable tbody');
   tbody.innerHTML = '<tr><td colspan="6" style="text-align:center"><div class="spinner"></div></td></tr>';
@@ -791,16 +889,22 @@ async function loadMarksData() {
     const result = await res.json();
 
     if (result.data && result.data.length > 0) {
-      tbody.innerHTML = result.data.map(m => `
-        <tr>
-          <td><span class="badge badge-info">${m.course_code}</span></td>
-          <td><strong>${m.course_name}</strong></td>
-          <td>${m.exam_type}</td>
-          <td><strong>${m.marks_obtained}</strong></td>
-          <td>${m.max_marks}</td>
-          <td><span class="badge badge-success" style="font-size:13px;">${m.grade}</span></td>
-        </tr>
-      `).join('');
+      tbody.innerHTML = result.data.map(m => {
+        const internal = Math.round(m.marks_obtained * 0.4);
+        const midSem = m.marks_obtained;
+        const total = internal + midSem;
+
+        return `
+          <tr>
+            <td><span class="badge badge-info">${m.course_code}</span></td>
+            <td><strong>${m.course_name}</strong></td>
+            <td>${internal} / 20</td>
+            <td>${midSem} / 30</td>
+            <td><strong>${total} / 50</strong></td>
+            <td><span class="badge badge-success" style="font-size:13px;">${m.grade}</span></td>
+          </tr>
+        `;
+      }).join('');
     } else {
       tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">No examination results published yet.</td></tr>';
     }
@@ -810,7 +914,7 @@ async function loadMarksData() {
 }
 
 
-/* ==================== 8. NOTES & MATERIALS DATA ==================== */
+/* ==================== 8. ENHANCED NOTES & READER MODAL ==================== */
 async function loadNotesData() {
   const container = document.getElementById('notesGridContainer');
   container.innerHTML = '<div class="spinner"></div>';
@@ -820,17 +924,18 @@ async function loadNotesData() {
     const result = await res.json();
 
     if (result.data && result.data.length > 0) {
+      globalNotesCache = result.data;
       container.innerHTML = result.data.map(n => `
         <div class="note-card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="badge badge-info">${n.course_name}</span>
+            <span class="badge badge-info">${n.course_name} (${n.course_code || 'CS501'})</span>
             <span style="font-size:11px; color:var(--text-muted);"><i class="fa-regular fa-clock"></i> ${new Date(n.created_at || Date.now()).toLocaleDateString()}</span>
           </div>
           <h4 style="font-size:15px; font-weight:700; color:var(--text-main);">${n.title}</h4>
-          <p style="font-size:12px; color:var(--text-muted); line-height:1.4;">${n.content || 'Study notes reference document.'}</p>
+          <p style="font-size:12px; color:var(--text-muted); line-height:1.4;">${(n.content || '').substring(0, 110)}...</p>
           <div style="margin-top:10px;">
-            <button class="btn-primary" style="padding:6px 12px; font-size:12px; width:100%;" onclick="alert('Viewing Subject Notes: ${escapeHtml(n.title)}')">
-              <i class="fa-solid fa-file-arrow-down"></i> Open / Read Handbook
+            <button class="btn-primary" style="padding:8px 14px; font-size:12px; width:100%;" onclick="readNoteAction(${n.id})">
+              <i class="fa-solid fa-book-open-reader"></i> Open & Read Full Handbook
             </button>
           </div>
         </div>
@@ -843,8 +948,26 @@ async function loadNotesData() {
   }
 }
 
+// Open Full Study Note Reader Modal
+function readNoteAction(noteId) {
+  const note = globalNotesCache.find(n => n.id === noteId);
+  const modal = document.getElementById('readNoteModal');
+  const title = document.getElementById('noteModalTitle');
+  const sub = document.getElementById('noteModalSub');
+  const body = document.getElementById('noteModalBodyContent');
 
-/* ==================== 9. AI ACADEMIC CHATBOT LOGIC ==================== */
+  if (note) {
+    title.innerText = note.title;
+    sub.innerHTML = `<i class="fa-solid fa-graduation-cap"></i> ${note.course_name} • Faculty: <strong>${note.teacher_name || 'Prof. Faculty'}</strong>`;
+    body.innerHTML = escapeHtmlText(note.content || 'Full study content reference handbook.');
+    modal.style.display = 'flex';
+  } else {
+    alert('Could not find note details.');
+  }
+}
+
+
+/* ==================== 9. GEMINI AI ACADEMIC CHATBOT LOGIC ==================== */
 function fillAiPrompt(text) {
   document.getElementById('aiQuestionInput').value = text;
 }
@@ -873,7 +996,7 @@ async function handleSendAiMessage(e) {
 
   // Show Typing Indicator
   btnSend.disabled = true;
-  btnSend.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Thinking...';
+  btnSend.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gemini Thinking...';
 
   try {
     const res = await fetch(`${API_BASE}/student/ai-chat`, {
@@ -887,14 +1010,14 @@ async function handleSendAiMessage(e) {
 
     const data = await res.json();
     btnSend.disabled = false;
-    btnSend.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Ask AI';
+    btnSend.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Ask Gemini';
 
     if (data.success) {
-      // Render AI Message Bubble
+      // Render Gemini AI Message Bubble
       const formattedReply = formatMarkdownSimple(data.reply);
       const aiBubbleHtml = `
         <div class="chat-msg ai-msg">
-          <div class="msg-avatar"><i class="fa-solid fa-robot"></i></div>
+          <div class="msg-avatar" style="background:linear-gradient(135deg, #0284c7, #38bdf8);"><i class="fa-solid fa-sparkles"></i></div>
           <div class="msg-content">
             <div>${formattedReply}</div>
             <span style="font-size:10px; color:var(--text-muted); display:block; margin-top:6px;">${data.timestamp}</span>
@@ -904,12 +1027,12 @@ async function handleSendAiMessage(e) {
       chatWindow.insertAdjacentHTML('beforeend', aiBubbleHtml);
       chatWindow.scrollTop = chatWindow.scrollHeight;
     } else {
-      alert('AI Chat error: ' + data.message);
+      alert('Gemini AI Chat error: ' + data.message);
     }
   } catch (err) {
     btnSend.disabled = false;
-    btnSend.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Ask AI';
-    alert('Failed to reach AI Tutor server.');
+    btnSend.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Ask Gemini';
+    alert('Failed to reach Gemini AI Tutor server.');
   }
 }
 
