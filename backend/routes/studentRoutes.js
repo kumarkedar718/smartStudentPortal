@@ -223,46 +223,50 @@ router.get('/notes', async (req, res) => {
   }
 });
 
-// 9. ENROLLED CSE COURSES DYNAMIC GEMINI AI ENGINE
+// 9. OFFICIAL GOOGLE GEMINI 1.5 FLASH REST API INTEGRATION
 router.post('/ai-chat', async (req, res) => {
   try {
-    const { question, studentName } = req.body;
+    const { question, studentName, userApiKey } = req.body;
 
     if (!question) {
       return res.status(400).json({ success: false, message: 'Question is required.' });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    // Read Key from User UI Input or Environment Variable
+    const apiKey = userApiKey || process.env.GEMINI_API_KEY;
     let reply = "";
+    let isLiveGeminiApi = false;
 
-    // 1. Try Live Google Gemini API Endpoint if Key is present
-    if (apiKey) {
+    // 1. Live Google Gemini 1.5 Flash API Call
+    if (apiKey && apiKey.trim().length > 10) {
       try {
-        const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
         const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey.trim()}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               contents: [{
                 parts: [{
-                  text: `You are Gemini AI Tutor for Gandhi Institute for Education and Technology (GIET), B.Tech CSE Semester 5. The student is enrolled in 6 courses: Data Structures (CS501), Software Engineering (CS502), Operating Systems (CS503), DBMS (CS504), Computer Networks (CS505), and Automata Theory (CS506). Provide a detailed, accurate academic answer to the question: "${question}". Include definitions, code snippets, diagrams, or step-by-step solutions.`
+                  text: `You are Google Gemini 1.5 Flash AI Assistant. Provide a detailed, 100% accurate, high-quality, comprehensive answer to the student's question: "${question}". Use clean markdown formatting, definitions, bullet points, formulas, or code snippets where applicable.`
                 }]
               }]
             })
           }
         );
         const data = await geminiRes.json();
-        if (data.candidates && data.candidates[0] && data.candidates[0].content.parts[0].text) {
+        if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
           reply = data.candidates[0].content.parts[0].text;
+          isLiveGeminiApi = true;
+        } else if (data.error) {
+          console.warn('Google Gemini API Error:', data.error.message);
         }
       } catch (err) {
-        console.warn('Gemini REST API error:', err.message);
+        console.warn('Gemini REST API Call Exception:', err.message);
       }
     }
 
-    // 2. Comprehensive GIET Enrolled CSE Subject Knowledge Engine
+    // 2. Intelligent Subject Knowledge Engine (Used if no key provided or key invalid)
     if (!reply) {
       reply = answerEnrolledCourseQuestion(question, studentName);
     }
@@ -270,6 +274,7 @@ router.post('/ai-chat', async (req, res) => {
     res.json({
       success: true,
       reply: reply,
+      isLiveGeminiApi: isLiveGeminiApi,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     });
 
@@ -284,7 +289,7 @@ function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// Complete Academic Knowledge Engine for GIET Enrolled Courses (B.Tech CSE Semester 5)
+// Academic Knowledge Engine
 function answerEnrolledCourseQuestion(question, studentName) {
   const q = question.trim();
   const lower = q.toLowerCase();
@@ -299,50 +304,35 @@ function answerEnrolledCourseQuestion(question, studentName) {
     }
   };
 
-  // ==================== COURSE 1: CS501 - DATA STRUCTURES & ALGORITHMS (Dr. Alok Verma) ====================
-  if (hasWord('data structure') || hasWord('dsa') || hasWord('cs501') || hasWord('bst') || hasWord('tree') || hasWord('array') || hasWord('linked list') || hasWord('stack') || hasWord('queue') || hasWord('graph') || hasWord('sort') || hasWord('sorting') || hasWord('recursion')) {
-    return `✨ **Gemini AI (CS501: Data Structures & Algorithms)**:\n\nCourse: **B.Tech CSE Sem 5 • CS501** | Faculty: **Dr. Alok Verma**\n\n### 🎓 Answer for: "${q}"\n\n**1. Definition & Core Concept**:\nIn **Data Structures & Algorithms**, data is organized, managed, and stored in memory to enable efficient access, search, and modification.\n\n**2. Core Enrolled Topics Summary**:\n- **Linear Data Structures**: Arrays ($O(1)$ lookup), Linked Lists (Dynamic memory, $O(1)$ insertion), Stacks (LIFO), Queues (FIFO).\n- **Non-Linear Data Structures**: Binary Search Trees (BST), AVL Trees, Graphs (BFS/DFS traversals).\n- **Sorting Algorithms**: QuickSort ($O(N \\log N)$), MergeSort, HeapSort.\n\n💻 **Sample C++ Code Snippet**:\n\`\`\`cpp\n// Node Structure for Linked List / BST\nstruct Node {\n    int data;\n    Node* left;\n    Node* right;\n    Node(int val) : data(val), left(nullptr), right(nullptr) {}\n};\n\`\`\`\n\n⏱️ **Complexity**: Time Complexity $\\mathcal{O}(N \\log N)$ | Auxiliary Space $\\mathcal{O}(N)$.`;
+  // OOPs Class & Object
+  if (hasWord('class') && (hasWord('object') || hasWord('objects')) || lower.includes('class and object') || lower.includes('class & object')) {
+    return `✨ **Gemini AI Answer**:\n\nIn Object-Oriented Programming (OOP), **Class** and **Object** are the two foundational building blocks:\n\n### 📦 1. What is a Class?\nA **Class** is a user-defined blueprint, prototype, or template from which individual objects are created. It defines variables (data members) and methods (member functions) that describe the state and behavior of the entity.\n\n### 🚗 2. What is an Object?\nAn **Object** is an active **instance** of a class created in memory with specific values. It occupies physical memory space and can invoke methods defined by the class.\n\n💻 **Example Implementation (C++)**:\n\`\`\`cpp\n#include <iostream>\n#include <string>\nusing namespace std;\n\n// Class Blueprint\nclass Student {\npublic:\n    string name;\n    int rollNumber;\n\n    void displayInfo() {\n        cout << "Student: " << name << " | Roll No: " << rollNumber << endl;\n    }\n};\n\nint main() {\n    // Object Creation (Instance of Class Student)\n    Student s1;\n    s1.name = "Rahul Sharma";\n    s1.rollNumber = 101;\n    s1.displayInfo(); // Output\n    return 0;\n}\n\`\`\`\n\n📌 **Key Difference**: Class is a logical template (takes 0 memory space), whereas Object is a real-world physical entity (occupies memory).`;
   }
 
-  // ==================== COURSE 2: CS502 - SOFTWARE ENGINEERING (Prof. Sunita Rao) ====================
-  if (hasWord('software engineering') || hasWord('sdlc') || hasWord('cs502') || hasWord('agile') || hasWord('waterfall') || hasWord('uml') || hasWord('scrum') || hasWord('testing') || hasWord('requirements')) {
-    return `✨ **Gemini AI (CS502: Software Engineering)**:\n\nCourse: **B.Tech CSE Sem 5 • CS502** | Faculty: **Prof. Sunita Rao**\n\n### 🎓 Answer for: "${q}"\n\n**1. Software Development Lifecycle (SDLC)**:\nSoftware Engineering involves systematic design, development, testing, and maintenance of high-quality software systems.\n\n**2. Core Enrolled Topics Summary**:\n- **SDLC Models**: Waterfall (Linear), Agile & Scrum (Iterative), Spiral (Risk-driven), RAD.\n- **Software Requirements**: SRS Document, Functional vs Non-Functional Requirements.\n- **UML Diagrams**: Class Diagrams, Use-Case Diagrams, Sequence & Activity Diagrams.\n- **Software Testing**: Black-Box Testing (Boundary Value Analysis), White-Box Testing (Basis Path), Unit & Integration Testing.`;
+  // Data Structures
+  if (hasWord('data structure') || hasWord('dsa') || hasWord('cs501') || hasWord('bst') || hasWord('tree') || hasWord('linked list') || hasWord('stack') || hasWord('queue') || hasWord('graph') || hasWord('sort') || hasWord('sorting') || hasWord('recursion')) {
+    return `✨ **Gemini AI (CS501: Data Structures & Algorithms)**:\n\nCourse: **B.Tech CSE Sem 5 • CS501** | Faculty: **Dr. Alok Verma**\n\n### 🎓 Answer for: "${q}"\n\n**1. Definition & Core Concept**:\nIn **Data Structures & Algorithms**, data is organized, managed, and stored in memory to enable efficient access, search, and modification.\n\n**2. Core Enrolled Topics Summary**:\n- **Linear Data Structures**: Arrays ($O(1)$ lookup), Linked Lists (Dynamic memory, $O(1)$ insertion), Stacks (LIFO), Queues (FIFO).\n- **Non-Linear Data Structures**: Binary Search Trees (BST), AVL Trees, Graphs (BFS/DFS traversals).\n- **Sorting Algorithms**: QuickSort ($O(N \\log N)$), MergeSort, HeapSort.\n\n💻 **Sample C++ Code Snippet**:\n\`\`\`cpp\nstruct Node {\n    int data;\n    Node* left;\n    Node* right;\n    Node(int val) : data(val), left(nullptr), right(nullptr) {}\n};\n\`\`\`\n\n⏱️ **Complexity**: Time Complexity $\\mathcal{O}(N \\log N)$ | Auxiliary Space $\\mathcal{O}(N)$.`;
   }
 
-  // ==================== COURSE 3: CS503 - OPERATING SYSTEMS (Dr. Rajesh Kumar) ====================
+  // Operating Systems
   if (hasWord('operating system') || hasWord('os') || hasWord('cs503') || hasWord('deadlock') || hasWord('semaphore') || hasWord('paging') || hasWord('virtual memory') || hasWord('scheduling') || hasWord('process') || hasWord('thread')) {
     return `✨ **Gemini AI (CS503: Operating Systems)**:\n\nCourse: **B.Tech CSE Sem 5 • CS503** | Faculty: **Dr. Rajesh Kumar**\n\n### 🎓 Answer for: "${q}"\n\n**1. Core Function of OS**:\nAn Operating System acts as an interface between computer hardware and user applications, managing system memory, CPU execution, and I/O devices.\n\n**2. Core Enrolled Topics Summary**:\n- **Process & Thread**: Process (independent memory space) vs Thread (lightweight unit sharing memory).\n- **CPU Scheduling**: FCFS, Shortest Job First (SJF), Round Robin (Time Quantum), Priority Scheduling.\n- **Synchronization & Deadlock**: Semaphores (\`wait()\`/\`signal()\`), Banker's Algorithm for Deadlock Avoidance, 4 Conditions (Mutual Exclusion, Hold & Wait, No Preemption, Circular Wait).\n- **Memory Management**: Paging, Segmentation, Virtual Memory, Page Faults (FIFO, LRU Page Replacement).`;
   }
 
-  // ==================== COURSE 4: CS504 - DATABASE MANAGEMENT SYSTEMS (Prof. Ananya Mishra) ====================
+  // DBMS
   if (hasWord('dbms') || hasWord('sql') || hasWord('cs504') || hasWord('database') || hasWord('3nf') || hasWord('normalization') || hasWord('join') || hasWord('acid') || hasWord('transaction') || hasWord('indexing')) {
     return `✨ **Gemini AI (CS504: Database Management Systems)**:\n\nCourse: **B.Tech CSE Sem 5 • CS504** | Faculty: **Prof. Ananya Mishra**\n\n### 🎓 Answer for: "${q}"\n\n**1. Relational Database Concepts**:\nDBMS provides a structured system to store, modify, query, and manage relational tables using SQL.\n\n**2. Core Enrolled Topics Summary**:\n- **Normalization**: 1NF (Atomic values), 2NF (No partial dependency), 3NF (No transitive dependency $X \\rightarrow Y$), BCNF.\n- **ACID Properties**: Atomicity, Consistency, Isolation, Durability.\n- **SQL Queries & Joins**: INNER JOIN, LEFT JOIN, Aggregations (\`GROUP BY\`, \`HAVING\`).\n- **Indexing & Storage**: B+ Trees, Primary Key, Foreign Key constraints, Query Optimization.`;
   }
 
-  // ==================== COURSE 5: CS505 - COMPUTER NETWORKS (Dr. Vikram Singh) ====================
+  // Computer Networks
   if (hasWord('computer networks') || hasWord('network') || hasWord('cs505') || hasWord('osi') || hasWord('tcp') || hasWord('ip') || hasWord('router') || hasWord('subnetting') || hasWord('dns') || hasWord('http')) {
     return `✨ **Gemini AI (CS505: Computer Networks)**:\n\nCourse: **B.Tech CSE Sem 5 • CS505** | Faculty: **Dr. Vikram Singh**\n\n### 🎓 Answer for: "${q}"\n\n**1. Networking Principles**:\nComputer Networks connect independent devices using protocol suites like TCP/IP to transfer data packets reliably.\n\n**2. Core Enrolled Topics Summary**:\n- **OSI 7-Layer Model**: Physical, Data Link, Network (IP Routing), Transport (TCP/UDP), Session, Presentation, Application (HTTP/DNS).\n- **IP Addressing & Subnetting**: IPv4 Classful/Classless addressing (CIDR), Subnet Masks.\n- **Transport Layer**: TCP 3-Way Handshake (SYN $\\rightarrow$ SYN-ACK $\\rightarrow$ ACK), Flow Control (Sliding Window), Congestion Control.\n- **Routing Algorithms**: Distance Vector (RIP), Link State (OSPF).`;
   }
 
-  // ==================== COURSE 6: CS506 - AUTOMATA THEORY / TOC (Prof. Neha Gupta) ====================
-  if (hasWord('automata') || hasWord('toc') || hasWord('cs506') || hasWord('dfa') || hasWord('nfa') || hasWord('cfg') || hasWord('turing') || hasWord('grammar') || hasWord('regular expression')) {
-    return `✨ **Gemini AI (CS506: Theory of Computation)**:\n\nCourse: **B.Tech CSE Sem 5 • CS506** | Faculty: **Prof. Neha Gupta**\n\n### 🎓 Answer for: "${q}"\n\n**1. Formal Languages & Automata**:\nTheory of Computation studies abstract mathematical models of computation (Automata) to define formal languages and solvability.\n\n**2. Core Enrolled Topics Summary**:\n- **Finite Automata**: Deterministic Finite Automata (DFA), Non-deterministic Finite Automata (NFA), Regular Expressions.\n- **Context-Free Languages**: Context-Free Grammars (CFG), Derivation Trees, Ambiguity.\n- **Pushdown Automata (PDA)**: Stack-assisted automata for context-free languages.\n- **Turing Machines & Decidability**: Universal Turing Machines, Halting Problem, P vs NP Complexity Classes.`;
-  }
-
-  // OOPs Class & Object General Query
-  if (hasWord('class') || hasWord('object')) {
-    return `✨ **Gemini AI (OOPs & Enrolled Programming)**:\n\nIn B.Tech CSE Semester 5 OOPs Curriculum:\n- **Class**: Blueprint defining variables (members) and functions.\n- **Object**: Instance of a class created in physical memory.\n\n\`\`\`cpp\nclass Student {\npublic:\n    string name;\n    void display() { cout << name; }\n};\nStudent s1; // Object created\n\`\`\``;
-  }
-
-  // Computer Hardware / Basics
-  if (hasWord('computer')) {
-    return `✨ **Gemini AI (Computer Fundamentals)**:\n\nA **Computer** is an electronic device operating under stored program instructions (Input $\\rightarrow$ CPU Processing $\\rightarrow$ RAM Memory $\\rightarrow$ Output).`;
-  }
-
-  // Dynamic Generator for any other general query
+  // Dynamic Generator for any other query
   const cleanSubject = extractTopicName(q);
 
-  return `✨ **Gemini AI Academic Assistant**:\n\nAcademic Subject: **GIET B.Tech CSE Semester 5**\n\n### 🎓 Detailed Answer: "${cleanSubject}"\n\n**1. Core Academic Definition**:\n**${cleanSubject}** is a fundamental technical concept. It describes the underlying principle, mathematical formula, or software mechanism used to process data, optimize algorithms, or design computer systems.\n\n**2. Enrolled Course Relevance**:\n- **Curriculum Context**: Analyzed in GIET B.Tech CSE Semester 5 coursework (Data Structures, OS, DBMS, Networks, Software Engg, Automata).\n- **Practical Application**: Implemented using C++, Python, Java, SQL, or network simulation tools.\n\n**3. Key Exam & Project Takeaway**:\nReview core definitions, practice code implementations, and solve previous year numerical questions.`;
+  return `✨ **Gemini AI Academic Assistant**:\n\n### 🎓 Answer for: "${cleanSubject}"\n\n**1. Core Academic Definition**:\n**${cleanSubject}** is a fundamental technical concept. It describes the underlying principle, mathematical formula, or software mechanism used to process data, optimize algorithms, or design computer systems.\n\n**2. Key Technical Specifications**:\n- **Primary Function**: Provides a systematic framework for solving complex problems.\n- **Implementation**: Written using programming languages (C++, Python, Java, JavaScript) or mathematical formulations.\n- **Optimization**: Evaluated based on computational efficiency, time complexity ($O(N)$), and memory utilization.\n\n💡 *Tip: Paste your free Google AI Studio \`GEMINI_API_KEY\` in the top box to get live 100% real-time Google Gemini AI outputs for any question!*`;
 }
 
 function extractTopicName(str) {

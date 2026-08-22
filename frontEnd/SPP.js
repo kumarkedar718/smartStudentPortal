@@ -21,7 +21,27 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.removeItem('ssp_user');
     }
   }
+
+  // Load saved Gemini API Key if available
+  const savedApiKey = localStorage.getItem('ssp_gemini_api_key');
+  if (savedApiKey) {
+    const keyInput = document.getElementById('userApiKeyInput');
+    if (keyInput) keyInput.value = savedApiKey;
+  }
 });
+
+// Save User Gemini API Key
+function saveUserApiKey() {
+  const keyInput = document.getElementById('userApiKeyInput');
+  const key = keyInput ? keyInput.value.trim() : '';
+  if (key) {
+    localStorage.setItem('ssp_gemini_api_key', key);
+    alert('Google Gemini API Key saved successfully! Live 100% Google AI responses active.');
+  } else {
+    localStorage.removeItem('ssp_gemini_api_key');
+    alert('Gemini API Key removed.');
+  }
+}
 
 // Role Switcher on Login Page
 function switchRole(role) {
@@ -191,7 +211,7 @@ function updateHeaderTitle(viewName) {
     fees: { title: 'Semester Fees & Official Receipts', sub: 'Tuition fee breakdown and transaction history' },
     marks: { title: 'Academic Performance & Marksheet', sub: 'Mid-Semester Examination marksheet & SGPA transcript' },
     notes: { title: 'Study Notes & Handbooks', sub: 'Course reference handbooks & unit cheat sheets' },
-    'ai-assistant': { title: 'Gemini AI Universal Assistant', sub: 'Ask ANY question on programming, general knowledge, math, or exam tips' }
+    'ai-assistant': { title: 'Official Google Gemini 1.5 Flash AI', sub: 'Ask ANY question on Data Structures, Software Engg, OS, DBMS, Networks, Automata' }
   };
 
   const info = titles[viewName] || { title: 'Portal View', sub: '' };
@@ -1055,7 +1075,7 @@ function readNoteAction(noteId) {
 }
 
 
-/* ==================== 9. UNIVERSAL GEMINI AI ACADEMIC CHATBOT LOGIC ==================== */
+/* ==================== 9. OFFICIAL GOOGLE GEMINI 1.5 FLASH REST API CHAT ==================== */
 function fillAiPrompt(text) {
   document.getElementById('aiQuestionInput').value = text;
 }
@@ -1066,6 +1086,8 @@ async function handleSendAiMessage(e) {
   const question = input.value.trim();
   const btnSend = document.getElementById('btnSendAi');
   const chatWindow = document.getElementById('chatMessagesWindow');
+  const keyInput = document.getElementById('userApiKeyInput');
+  const userApiKey = keyInput ? keyInput.value.trim() : localStorage.getItem('ssp_gemini_api_key') || '';
 
   if (!question) return;
 
@@ -1092,7 +1114,8 @@ async function handleSendAiMessage(e) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         question: question,
-        studentName: currentUser ? currentUser.name : 'Student'
+        studentName: currentUser ? currentUser.name : 'Student',
+        userApiKey: userApiKey
       })
     });
 
@@ -1103,12 +1126,19 @@ async function handleSendAiMessage(e) {
     if (data.success) {
       // Render Gemini AI Message Bubble
       const formattedReply = formatMarkdownSimple(data.reply);
+      const isLiveBadge = data.isLiveGeminiApi 
+        ? '<span style="font-size:10px; background:#dcfce7; color:#15803d; font-weight:800; padding:2px 6px; border-radius:4px; margin-left:6px;"><i class="fa-solid fa-bolt"></i> Live Google Gemini API</span>'
+        : '';
+
       const aiBubbleHtml = `
         <div class="chat-msg ai-msg">
           <div class="msg-avatar" style="background:linear-gradient(135deg, #0284c7, #38bdf8);"><i class="fa-solid fa-sparkles"></i></div>
           <div class="msg-content">
             <div>${formattedReply}</div>
-            <span style="font-size:10px; color:var(--text-muted); display:block; margin-top:6px;">${data.timestamp}</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+              <span style="font-size:10px; color:var(--text-muted);">${data.timestamp}</span>
+              ${isLiveBadge}
+            </div>
           </div>
         </div>
       `;

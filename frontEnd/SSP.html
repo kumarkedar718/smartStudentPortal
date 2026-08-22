@@ -487,24 +487,38 @@
         </section>
 
 
-        <!-- ==================== GEMINI AI UNIVERSAL EDUCATIONAL ASSISTANT VIEW ==================== -->
+        <!-- ==================== GEMINI AI OFFICIAL REST API ASSISTANT VIEW ==================== -->
         <section id="viewAi-assistant" class="portal-view">
           <div class="dashboard-card">
             <div class="card-header" style="background: linear-gradient(135deg, #1e1b4b, #4338ca); color:white;">
-              <h3 style="color:white;"><i class="fa-solid fa-sparkles" style="color:#38bdf8;"></i> Gemini 1.5 Flash AI Assistant</h3>
-              <span class="badge" style="background:rgba(255,255,255,0.2); color:white;">Ask Anything (Educational Purpose)</span>
+              <h3 style="color:white;"><i class="fa-solid fa-sparkles" style="color:#38bdf8;"></i> Official Google Gemini 1.5 Flash AI Assistant</h3>
+              <span class="badge" id="geminiLiveStatusBadge" style="background:rgba(16,185,129,0.2); color:#34d399;">● Google Gemini REST API Ready</span>
             </div>
+
+            <!-- Optional Gemini API Key Bar for Unrestricted Live Google Answers -->
+            <div style="background:#eef2ff; border-bottom:1px solid #c7d2fe; padding:10px 20px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+              <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--primary); font-weight:700;">
+                <i class="fa-solid fa-key"></i> Google Gemini API Key:
+              </div>
+              <div style="display:flex; gap:8px; flex:1; max-width:480px;">
+                <input type="password" id="userApiKeyInput" class="form-control" style="font-size:12px; padding:6px 10px;" placeholder="Paste free Google AI Studio Key (AIzaSy...) for 100% Live Google Answers..." />
+                <button type="button" class="btn-primary" style="font-size:11px; padding:6px 12px; white-space:nowrap;" onclick="saveUserApiKey()">
+                  <i class="fa-solid fa-floppy-disk"></i> Save Key
+                </button>
+              </div>
+            </div>
+
             <div class="card-body" style="padding: 20px;">
               
               <!-- Gemini Mobile App Prompt Suggestions Chips -->
               <div class="prompt-chips">
                 <span class="chip-title"><i class="fa-solid fa-compass"></i> Ask Gemini Anything:</span>
-                <button type="button" class="chip-btn" onclick="fillAiPrompt('Solve Calculus Integration and Matrix Multiplication problem step by step')">🧮 Calculus & Math</button>
-                <button type="button" class="chip-btn" onclick="fillAiPrompt('Write a Python script for Data Analysis and Sorting')">🐍 Python Coding</button>
-                <button type="button" class="chip-btn" onclick="fillAiPrompt('Explain Physics Quantum Mechanics and Thermodynamics principles')">⚛️ Physics & Science</button>
-                <button type="button" class="chip-btn" onclick="fillAiPrompt('Draft a Statement of Purpose (SOP) for Higher Studies')">📝 SOP & Essay Writing</button>
-                <button type="button" class="chip-btn" onclick="fillAiPrompt('GATE Exam Preparation Strategy for Computer Science')">🎯 GATE Exam Strategy</button>
-                <button type="button" class="chip-btn" onclick="fillAiPrompt('Explain Binary Search Tree and Graph Traversals algorithm with code')">🌲 DSA Algorithms</button>
+                <button type="button" class="chip-btn" onclick="fillAiPrompt('Explain Binary Search Tree insertion and deletion with C++ code')">🌲 Data Structures (CS501)</button>
+                <button type="button" class="chip-btn" onclick="fillAiPrompt('What is Agile vs Waterfall SDLC model in Software Engineering?')">⚙️ Software Engg (CS502)</button>
+                <button type="button" class="chip-btn" onclick="fillAiPrompt('Explain Deadlock conditions and Banker Algorithm in OS')">💻 Operating Systems (CS503)</button>
+                <button type="button" class="chip-btn" onclick="fillAiPrompt('Explain 3NF Normalization and SQL Joins with examples')">🗄️ DBMS & SQL (CS504)</button>
+                <button type="button" class="chip-btn" onclick="fillAiPrompt('Explain OSI 7 Layer Model and TCP 3-Way Handshake')">🌐 Computer Networks (CS505)</button>
+                <button type="button" class="chip-btn" onclick="fillAiPrompt('What is Deterministic Finite Automata (DFA)?')">🔢 Automata Theory (CS506)</button>
               </div>
 
               <!-- Chat Message Window -->
@@ -512,14 +526,14 @@
                 <div class="chat-msg ai-msg">
                   <div class="msg-avatar" style="background:linear-gradient(135deg, #0284c7, #38bdf8);"><i class="fa-solid fa-sparkles"></i></div>
                   <div class="msg-content">
-                    <p>✨ Hi! I am <strong>Google Gemini AI Educational Assistant</strong>. You can ask me ANY question regarding Mathematics, Coding (Python, C++, Java, JS), Physics, History, Essay Writing, Competitive Exams, or Career Advice!</p>
+                    <p>✨ Welcome to <strong>Google Gemini 1.5 Flash AI Tutor</strong>! Ask me ANY question on Data Structures, Software Engineering, Operating Systems, DBMS, Computer Networks, Automata, or any general topic!</p>
                   </div>
                 </div>
               </div>
 
               <!-- Chat Input Box -->
               <form id="aiChatForm" class="chat-input-bar" onsubmit="handleSendAiMessage(event)">
-                <input type="text" id="aiQuestionInput" class="form-control" placeholder="Ask Gemini ANY question (e.g. Solve Calculus, Write Python code, Explain Physics)..." required />
+                <input type="text" id="aiQuestionInput" class="form-control" placeholder="Ask Gemini ANY question (e.g. Explain 3NF, Write C++ code, OSI layers)..." required />
                 <button type="submit" class="btn-primary" id="btnSendAi" style="background:linear-gradient(135deg, #4f46e5, #0284c7);">
                   <i class="fa-solid fa-paper-plane"></i> Ask Gemini
                 </button>
