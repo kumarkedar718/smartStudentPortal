@@ -7,6 +7,8 @@ const API_BASE = '/api';
 let currentUser = null; // { id, name, role, studentId, teacherId, rollNumber, teacherCode, department }
 let currentView = 'dashboard';
 let globalNotesCache = [];
+let doughnutChartInstance = null;
+let barChartInstance = null;
 
 // DOM Loaded Initialization
 document.addEventListener('DOMContentLoaded', () => {
@@ -184,12 +186,12 @@ function updateHeaderTitle(viewName) {
     dashboard: { title: 'Academic Dashboard Overview', sub: 'Gandhi Institute for Education and Technology • CSE Department' },
     timetable: { title: 'Weekly Class Timetable', sub: 'Lectures and Practical Labs Schedule (Semester 5)' },
     teachers: { title: currentUser.role === 'student' ? 'Dedicated Subject Professors' : 'GIET CSE Student Directory', sub: 'Faculty & Student academic directory' },
-    attendance: { title: 'Attendance Performance Analytics', sub: 'Subject-wise attendance percentage and logs' },
+    attendance: { title: '3D Interactive Attendance Analytics', sub: 'Graphical visual gauge, subject comparison charts & logs' },
     assignments: { title: 'Coursework & Projects', sub: 'Track due dates, submit solutions, and view grades' },
     fees: { title: 'Semester Fees & Official Receipts', sub: 'Tuition fee breakdown and transaction history' },
     marks: { title: 'Academic Performance & Marksheet', sub: 'Mid-Semester Examination marksheet & SGPA transcript' },
     notes: { title: 'Study Notes & Handbooks', sub: 'Course reference handbooks & unit cheat sheets' },
-    'ai-assistant': { title: 'Gemini AI Academic Assistant', sub: 'Ask instant academic doubts, code help, and exam prep tips' }
+    'ai-assistant': { title: 'Gemini AI Universal Assistant', sub: 'Ask ANY question on programming, general knowledge, math, or exam tips' }
   };
 
   const info = titles[viewName] || { title: 'Portal View', sub: '' };
@@ -244,7 +246,7 @@ async function loadDashboardData() {
       const result = await res.json();
       const stats = result.data;
 
-      // Clickable Stat Cards for Interactive Information
+      // Clickable Stat Cards
       statContainer.innerHTML = `
         <div class="stat-card card-blue" onclick="onClickStatCard('courses')" title="Click to view Enrolled Subjects Detail">
           <div class="stat-val">${stats.enrolledCourses}</div>
@@ -375,7 +377,6 @@ async function loadDashboardData() {
 // Click Action for Interactive Stat Cards
 async function onClickStatCard(type) {
   if (type === 'courses') {
-    // Open Enrolled Subjects Detail Modal
     const modal = document.getElementById('enrolledSubjectsModal');
     const body = document.getElementById('enrolledSubjectsBody');
     body.innerHTML = '<div class="spinner"></div>';
@@ -505,7 +506,7 @@ async function loadTeachersOrStudentsData() {
 }
 
 
-/* ==================== 4. ATTENDANCE DATA & GRAPHICAL ANALYTICS ==================== */
+/* ==================== 4. ATTENDANCE DATA & INTERACTIVE 3D CHARTS ==================== */
 async function loadAttendanceData() {
   const summaryContainer = document.getElementById('attendanceSummaryContainer');
   const logsTbody = document.querySelector('#attendanceLogsTable tbody');
@@ -517,8 +518,10 @@ async function loadAttendanceData() {
       const res = await fetch(`${API_BASE}/student/attendance/${currentUser.studentId || 1}`);
       const result = await res.json();
 
-      // Render Graphical Progress Bars & Cards
+      // Initialize Interactive 3D Chart Visualizations
       if (result.summary && result.summary.length > 0) {
+        renderAttendanceCharts(result.summary);
+
         summaryContainer.innerHTML = result.summary.map(s => {
           const total = s.total_lectures || 0;
           const present = s.present_count || 0;
@@ -533,7 +536,6 @@ async function loadAttendanceData() {
                 <span class="badge ${badgeClass}">${pct}% Attended</span>
               </div>
 
-              <!-- Graphical Attendance Progress Ring/Bar -->
               <div style="margin: 12px 0;">
                 <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:4px;">
                   <span>Present: <strong>${present}</strong></span>
@@ -586,6 +588,95 @@ async function loadAttendanceData() {
     } catch (err) {
       console.error(err);
     }
+  }
+}
+
+// Render Interactive Chart.js Visualizations (3D Doughnut & 3D Bar Graph)
+function renderAttendanceCharts(summaryData) {
+  if (typeof Chart === 'undefined') return;
+
+  let totalPresent = 0, totalAbsent = 0;
+  const labels = [];
+  const percentages = [];
+  const barColors = [];
+
+  summaryData.forEach(item => {
+    const total = item.total_lectures || 0;
+    const present = item.present_count || 0;
+    const absent = item.absent_count || 0;
+    const pct = total > 0 ? Math.round((present / total) * 100) : 100;
+
+    totalPresent += present;
+    totalAbsent += absent;
+    labels.push(item.course_code || item.course_name);
+    percentages.push(pct);
+    barColors.push(pct >= 75 ? '#10b981' : '#ef4444');
+  });
+
+  // 1. Interactive 3D Doughnut Gauge Chart
+  const doughnutCtx = document.getElementById('attendanceDoughnutChart');
+  if (doughnutCtx) {
+    if (doughnutChartInstance) doughnutChartInstance.destroy();
+    doughnutChartInstance = new Chart(doughnutCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Lectures Attended (Present)', 'Missed Lectures (Absent)'],
+        datasets: [{
+          data: [totalPresent, totalAbsent],
+          backgroundColor: ['#10b981', '#ef4444'],
+          hoverBackgroundColor: ['#059669', '#dc2626'],
+          borderWidth: 3,
+          borderColor: '#ffffff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { font: { family: 'Plus Jakarta Sans', size: 11, weight: '700' } } },
+          tooltip: { cornerRadius: 8, padding: 10 }
+        },
+        cutout: '70%'
+      }
+    });
+  }
+
+  // 2. Interactive 3D Bar Chart for Subject-wise Comparison
+  const barCtx = document.getElementById('attendanceBarChart');
+  if (barCtx) {
+    if (barChartInstance) barChartInstance.destroy();
+    barChartInstance = new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Subject Attendance (%)',
+          data: percentages,
+          backgroundColor: barColors,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            min: 0,
+            max: 100,
+            ticks: { callback: value => value + '%' }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: context => `Attendance: ${context.raw}% (${context.raw >= 75 ? 'Safe ✅' : 'Warning ⚠️'})`
+            }
+          }
+        }
+      }
+    });
   }
 }
 
@@ -967,7 +1058,7 @@ function readNoteAction(noteId) {
 }
 
 
-/* ==================== 9. GEMINI AI ACADEMIC CHATBOT LOGIC ==================== */
+/* ==================== 9. UNIVERSAL GEMINI AI ACADEMIC CHATBOT LOGIC ==================== */
 function fillAiPrompt(text) {
   document.getElementById('aiQuestionInput').value = text;
 }
@@ -1042,6 +1133,7 @@ function escapeHtmlText(str) {
 
 function formatMarkdownSimple(text) {
   let formatted = escapeHtmlText(text);
+  formatted = formatted.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre style="background:#1e293b; color:#f8fafc; padding:12px; border-radius:8px; font-family:monospace; font-size:12px; margin:8px 0; overflow-x:auto;"><code>$2</code></pre>');
   formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
   formatted = formatted.replace(/\n/g, '<br/>');

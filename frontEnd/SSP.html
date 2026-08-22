@@ -8,6 +8,10 @@
   <!-- Google Fonts & Font Awesome Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <!-- Chart.js for Interactive 3D Graphical Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <link rel="stylesheet" href="SSP.css" />
 </head>
 <body>
@@ -121,7 +125,7 @@
             <i class="fa-solid fa-user-tie"></i> <span id="teachersMenuText">Subject Faculty</span>
           </li>
           <li class="menu-item" data-view="attendance" onclick="switchView('attendance')">
-            <i class="fa-solid fa-chart-column"></i> <span>Attendance Analytics</span>
+            <i class="fa-solid fa-chart-column"></i> <span>3D Attendance Analytics</span>
           </li>
           <li class="menu-item" data-view="assignments" onclick="switchView('assignments')">
             <i class="fa-solid fa-file-pen"></i> <span>Assignments</span>
@@ -262,7 +266,7 @@
         </section>
 
 
-        <!-- ==================== ATTENDANCE ANALYTICS VIEW ==================== -->
+        <!-- ==================== ATTENDANCE ANALYTICS & 3D INTERACTIVE GRAPHICAL CHARTS ==================== -->
         <section id="viewAttendance" class="portal-view">
           <!-- Teacher Attendance Actions (Visible to Teacher only) -->
           <div id="teacherAttendanceControls" class="dashboard-card teacher-only" style="display:none; margin-bottom: 20px;">
@@ -292,11 +296,35 @@
             </div>
           </div>
 
-          <!-- Graphical Attendance Visual Gauge & Subject Bar Graphs -->
+          <!-- Interactive 3D Graphical Charts Section for Students -->
+          <div class="student-only" style="display:grid; grid-template-columns:1fr 2fr; gap:20px; margin-bottom:20px;">
+            
+            <!-- Chart 1: 3D Doughnut Attendance Gauge -->
+            <div class="dashboard-card">
+              <div class="card-header">
+                <h3><i class="fa-solid fa-chart-pie"></i> Overall 3D Attendance Ratio</h3>
+              </div>
+              <div class="card-body" style="height:280px; display:flex; align-items:center; justify-content:center;">
+                <canvas id="attendanceDoughnutChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Chart 2: Interactive 3D Bar Graph for Subject Comparison -->
+            <div class="dashboard-card">
+              <div class="card-header">
+                <h3><i class="fa-solid fa-chart-column"></i> Subject-wise Interactive Attendance Bar Graph</h3>
+                <span class="badge badge-warning">75% Benchmark Threshold</span>
+              </div>
+              <div class="card-body" style="height:280px;">
+                <canvas id="attendanceBarChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subject Progress Cards Breakdown -->
           <div class="dashboard-card student-only">
             <div class="card-header">
-              <h3><i class="fa-solid fa-chart-pie"></i> Graphical Attendance Performance Analytics</h3>
-              <span class="badge badge-warning"><i class="fa-solid fa-triangle-exclamation"></i> 75% Minimum Required</span>
+              <h3><i class="fa-solid fa-list"></i> Subject Attendance Status</h3>
             </div>
             <div class="card-body">
               <div class="attendance-summary-grid" id="attendanceSummaryContainer">
@@ -463,7 +491,7 @@
         <section id="viewAi-assistant" class="portal-view">
           <div class="dashboard-card">
             <div class="card-header" style="background: linear-gradient(135deg, #1e1b4b, #4338ca); color:white;">
-              <h3 style="color:white;"><i class="fa-solid fa-sparkles" style="color:#38bdf8;"></i> Gemini AI Academic Assistant & Doubt Solver</h3>
+              <h3 style="color:white;"><i class="fa-solid fa-sparkles" style="color:#38bdf8;"></i> Gemini AI Academic Assistant & Universal Doubt Solver</h3>
               <span class="badge" style="background:rgba(255,255,255,0.2); color:white;">GIET AI Study Engine</span>
             </div>
             <div class="card-body" style="padding: 20px;">
@@ -475,6 +503,7 @@
                 <button type="button" class="chip-btn" onclick="fillAiPrompt('What is 3NF Normalization in DBMS with an example?')">🗄️ 3NF Normalization</button>
                 <button type="button" class="chip-btn" onclick="fillAiPrompt('Explain TCP 3-Way Handshake step by step')">🌐 TCP Handshake</button>
                 <button type="button" class="chip-btn" onclick="fillAiPrompt('Difference between Process and Thread in Operating Systems')">⚙️ Process vs Thread</button>
+                <button type="button" class="chip-btn" onclick="fillAiPrompt('Write a Python script for factorial calculation')">🐍 Python Code</button>
                 <button type="button" class="chip-btn" onclick="fillAiPrompt('How to prepare for B.Tech Semester Exams at GIET?')">📚 Exam Prep Guide</button>
               </div>
 
@@ -483,14 +512,14 @@
                 <div class="chat-msg ai-msg">
                   <div class="msg-avatar" style="background:linear-gradient(135deg, #0284c7, #38bdf8);"><i class="fa-solid fa-sparkles"></i></div>
                   <div class="msg-content">
-                    <p>✨ Welcome to <strong>Gemini AI Academic Assistant</strong> at Gandhi Institute for Education and Technology! Ask me any academic doubt, programming question, or exam preparation tips!</p>
+                    <p>✨ Welcome to <strong>Gemini AI Universal Tutor</strong> at Gandhi Institute for Education and Technology! Ask me ANY question on programming, data structures, general knowledge, science, or exam preparation!</p>
                   </div>
                 </div>
               </div>
 
               <!-- Chat Input Box -->
               <form id="aiChatForm" class="chat-input-bar" onsubmit="handleSendAiMessage(event)">
-                <input type="text" id="aiQuestionInput" class="form-control" placeholder="Ask Gemini AI any academic question or coding doubt..." required />
+                <input type="text" id="aiQuestionInput" class="form-control" placeholder="Ask Gemini AI ANY question (e.g. Write a Python script, Explain 3NF, How TCP works)..." required />
                 <button type="submit" class="btn-primary" id="btnSendAi" style="background:linear-gradient(135deg, #4f46e5, #0284c7);">
                   <i class="fa-solid fa-paper-plane"></i> Ask Gemini
                 </button>
