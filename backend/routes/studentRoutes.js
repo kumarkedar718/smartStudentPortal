@@ -146,7 +146,7 @@ router.get('/assignments/:studentId', async (req, res) => {
   }
 });
 
-// Submit Assignment
+// Submit Assignment (Student -> Subject Teacher)
 router.post('/assignments/submit', async (req, res) => {
   try {
     const { assignment_id, student_id, submission_text } = req.body;
@@ -160,20 +160,21 @@ router.post('/assignments/submit', async (req, res) => {
       [assignment_id, student_id]
     );
 
-    if (existing.length > 0) {
+    if (existing && existing.length > 0) {
       await db.query(
-        `UPDATE submissions SET submission_text = ?, submission_date = CURRENT_TIMESTAMP, status = 'Pending' WHERE id = ?`,
+        `UPDATE submissions SET submission_text = ?, submission_date = CURRENT_TIMESTAMP, status = 'Pending', marks_obtained = NULL, feedback = NULL WHERE id = ?`,
         [submission_text, existing[0].id]
       );
     } else {
       await db.query(
         `INSERT INTO submissions (assignment_id, student_id, submission_text, status) VALUES (?, ?, ?, 'Pending')`,
-        [submission_text, existing[0].id]
+        [assignment_id, student_id, submission_text]
       );
     }
 
-    res.json({ success: true, message: 'Assignment submitted successfully!' });
+    res.json({ success: true, message: 'Assignment submitted successfully to Subject Faculty!' });
   } catch (error) {
+    console.error('Assignment submission error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
